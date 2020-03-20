@@ -1,15 +1,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     configureWebpack: config => {
         config.entry = {
-            app: path.join(__dirname, 'src', 'main.js')
+            app: path.join(__dirname, 'frontend', 'src', 'main.js')
         };
         config.resolve = {
             ...config.resolve,
             alias: {
-                '@': path.join(__dirname, 'src'),
+                '@': path.join(__dirname, 'frontend', 'src'),
                 vue$: 'vue/dist/vue.runtime.esm.js'
             },
             extensions: [
@@ -28,11 +29,14 @@ module.exports = {
             ...config.plugins,
             new HtmlWebpackPlugin({
                 filename: 'index.html',
-                favicon:  path.resolve(__dirname, './public/favicon.ico'),
-                template: path.resolve(__dirname, './public/index.html'),
+                favicon:  path.resolve(__dirname, './frontend/favicon.ico'),
+                template: path.resolve(__dirname, './frontend/index.html'),
                 title: 'FETCHER',
                 inject: true
-            })
+            }),
+            new CopyWebpackPlugin([ // copy static to dist folder
+                { from: path.resolve(__dirname, 'frontend/src/assets/img'), to: 'assets/img' }, // copy img folder content to /dist/assets/img
+            ]),
         ];
     }
 };

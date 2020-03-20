@@ -10,8 +10,22 @@
 
                 <div class="lazy-profile">
                     <transition mode="out-in" name="fade-in">
-                        <div v-if="lazyProfile" class="lazy-profile__inner">
-                            <div class="lazy-profile__picture">
+                        <div v-if="lazyProfile === 'not-found'" class="profile-inner" :key="notFoundId">
+                            <div class="profile-picture">
+                                <img src="@/assets/img/404.jpg" alt="profile-img">
+                            </div>
+                            <div class="profile-inner__text">
+                                Profile with id:
+                                <br>
+                                <span>{{ this.notFoundId }}</span>
+                                <br>
+                                Not found.
+                                <br>
+                                Try one another, boy.
+                            </div>
+                        </div>
+                        <div v-else-if="lazyProfile" :key="this.lazyProfile.id" class="profile-inner">
+                            <div class="profile-picture">
                                 <img :src="this.lazyProfile.photo_100" alt="profile-img">
                             </div>
                             <div class="lazy-profile__fname">
@@ -34,7 +48,7 @@
                                 Friends count:
                             </div>
                         </div>
-                        <div v-else class="lazy-profile__loader">
+                        <div v-else class="lazy-profile__loader" key="loader">
                             <div class="inner one"></div>
                             <div class="inner two"></div>
                             <div class="inner three"></div>
@@ -57,7 +71,9 @@
             id: '',
             pending: false,
             lastRequestId: true,
-            lazyProfile: null
+            lazyProfile: null,
+            notFoundId: null,
+            cachedData: {}
         }),
         computed: {
             queryParams() {
@@ -69,7 +85,8 @@
                         'deactivated',
                         'sex',
                         'bdate',
-                        'photo_100'
+                        'photo_100',
+                        'domain'
                     ],
                     v: 5.52
                 }
@@ -77,11 +94,25 @@
         },
         methods: {
             fetchInfo() {
-                if (this.pending || !this.queryParams.user_ids) return;
+                // pending?
+                if (this.pending) return;
+                // clean input?
+                if (!this.queryParams.user_ids) {
+                    return this.lazyProfile = null;
+                }
+                // cached already ?
+                if (this.cachedData[this.queryParams.user_ids]) {
+                    if (this.cachedData[this.queryParams.user_ids] === 'not-found') {
+                        this.notFoundId = this.queryParams.user_ids;
+                        return this.lazyProfile = 'not-found';
+                    }
+                    return this.lazyProfile = Object.assign({}, this.cachedData[this.queryParams.user_ids]);
+                }
 
                 this.pending = true;
                 this.lastRequestId = this.id;
 
+                // axios.get('/profiles');
                 axios.get(
                     corsProxy + `https://api.vk.com/method/users.get?${querystring.stringify(this.queryParams)}`,
                 )
@@ -90,12 +121,26 @@
                     const {response, error} = res.data;
 
                     if (!error && !response[0].deactivated) {
+                        const userId = response[0].domain || response[0].id;
+
+                        this.cachedData[userId] = Object.assign({}, response[0]);
                         this.lazyProfile = Object.assign({}, response[0]);
+                    }
+                    else {
+                        this.lazyProfile = 'not-found';
                     }
 
                     this.pending = false;
                     if (this.lastRequestId !== this.id) {
                         this.fetchInfo();
+                    }
+                    else {
+                        this.notFoundId = this.id;
+
+                        //cache not found profiles
+                        if (this.lazyProfile === 'not-found') {
+                            this.cachedData[this.notFoundId] = 'not-found';
+                        }
                     }
                 })
             }
@@ -172,6 +217,7 @@
                     color: #FFFFFF;
                     font-size: 30px;
                     margin-bottom: 40px;
+                    text-align: center;
 
                     &:focus {
                     }
@@ -195,6 +241,7 @@
                 color: #FFFFFF;
 
                 &__loader {
+                    margin-top: 30px;
                     width: 64px;
                     height: 64px;
                     border-radius: 50%;
@@ -202,7 +249,7 @@
 
                 }
 
-                &__inner {
+                .profile-inner {
                     display: flex;
                     flex-wrap: wrap;
                     justify-content: center;
@@ -212,6 +259,7 @@
                     border-radius: 20px;
                     padding-bottom: 20px;
                     cursor: pointer;
+                    line-height: 1.4rem;
 
                     >* {
                         flex: 1 0 100%;
@@ -219,18 +267,34 @@
                     &:hover {
                         background-color: rgba(181, 181, 181, 0.47);
                     }
+                    &__text {
+                        width: 80%;
+                        font-size: 18px;
+                        margin: 10px;
+                        line-height: 1.4rem;
+
+                        span {
+                            font-size: 30px;
+                            line-height: 2rem;
+                            display: inline-flex;
+                            align-items: center;
+                            color: rgba(44, 204, 255, 0.58);
+                            padding: 10px 0;
+                        }
+                    }
                 }
-                &__picture{
+                .profile-picture{
                     text-align: center;
                     margin: 20px;
+
                     img {
+                        height: 100px;
+                        width: 100px;
                         border-radius: 50px;
                         display: inline-block;
                     }
                 }
-                &__fname{
-
-                }
+                &__fname{}
                 &__lname{}
                 &__sex{}
                 &__age{}
@@ -295,10 +359,10 @@
         }
 
         .fade-in-enter-active {
-            animation: fade-in 1.6s ease-in-out both;
+            animation: fade-in .5s ease-in-out both;
         }
         .fade-in-leave-active {
-            animation: fade-in 1.6s ease-in-out both reverse;
+            animation: fade-in .5s ease-in-out both reverse;
         }
 
         @keyframes fade-in {
