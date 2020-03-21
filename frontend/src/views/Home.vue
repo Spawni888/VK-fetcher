@@ -5,144 +5,113 @@
         </div>
         <div class="home-input">
             <div class="input-container">
-                <input type="text" v-model="id" @input="fetchInfo" placeholder="PLACE PERSON ID HERE">
+                <input type="text" v-model="id" @input="fetchInfo" placeholder="PLACE VK-ID HERE">
             </div>
 
-                <div class="lazy-profile">
-                    <transition mode="out-in" name="fade-in">
-                        <div v-if="lazyProfile === 'not-found'" class="profile-inner" :key="notFoundId">
-                            <div class="profile-picture">
-                                <img src="@/assets/img/404.jpg" alt="profile-img">
-                            </div>
-                            <div class="profile-inner__text">
-                                Profile with id:
-                                <br>
-                                <span>{{ this.notFoundId }}</span>
-                                <br>
-                                Not found.
-                                <br>
-                                Try one another, boy.
-                            </div>
+            <div class="lazy-profile">
+                <transition mode="out-in" name="fade-in">
+                    <div v-if="lazyProfile === 'not-found'" class="profile-inner" :key="notFoundId">
+                        <div class="profile-picture">
+                            <img src="@/assets/img/404.jpg" alt="profile-img">
                         </div>
-                        <div v-else-if="lazyProfile" :key="this.lazyProfile.id" class="profile-inner">
-                            <div class="profile-picture">
-                                <img :src="this.lazyProfile.photo_100" alt="profile-img">
-                            </div>
-                            <div class="lazy-profile__fname">
-                                 First name:
-                                {{ this.lazyProfile.first_name }}
-                            </div>
-                            <div class="lazy-profile__lname">
-                                Last name:
-                                {{ this.lazyProfile.last_name }}
-                            </div>
-                            <div class="lazy-profile__sex">
-                                Sex:
-                                {{ this.lazyProfile.sex | defineSex}}
-                            </div>
-                            <div class="lazy-profile__age">
-                                Age:
-                                {{ this.lazyProfile.bdate | defineAge }}
-                            </div>
-                            <div class="lazy-profile__friends">
-                                Friends count:
-                            </div>
+                        <div class="profile-inner__text">
+                            Profile with id:
+                            <br>
+                            <span>{{ this.notFoundId }}</span>
+                            <br>
+                            Not found.
+                            <br>
+                            Try one another, boy.
                         </div>
-                        <div v-else class="lazy-profile__loader" key="loader">
-                            <div class="inner one"></div>
-                            <div class="inner two"></div>
-                            <div class="inner three"></div>
+                    </div>
+                    <div
+                            v-else-if="lazyProfile"
+                            :key="this.lazyProfile.id"
+                            class="profile-inner profile-inner_hover"
+                            @click="selectProfile">
+
+                        <div class="profile-picture">
+                            <img :src="this.lazyProfile.photo_100" alt="profile-img">
                         </div>
-                    </transition>
-                </div>
+                        <div class="lazy-profile__fname">
+                             First name:
+                            {{ this.lazyProfile.first_name }}
+                        </div>
+                        <div class="lazy-profile__lname">
+                            Last name:
+                            {{ this.lazyProfile.last_name }}
+                        </div>
+                        <div class="lazy-profile__sex">
+                            Sex:
+                            {{ this.lazyProfile.sex | defineSex}}
+                        </div>
+                        <div class="lazy-profile__age">
+                            Age:
+                            {{ this.lazyProfile.bdate | defineAge }}
+                        </div>
+                        <div class="lazy-profile__friends">
+                            Friends count:
+                            {{ this.lazyProfile.friends.count }}
+                        </div>
+                    </div>
+                    <div v-else class="lazy-profile__loader" key="loader">
+                        <div class="inner one"></div>
+                        <div class="inner two"></div>
+                        <div class="inner three"></div>
+                    </div>
+                </transition>
+            </div>
         </div>
+        <transition name="fade-in" mode="out-in">
+            <div v-if="Object.keys(selectedProfiles).length" class="selected-profiles" :key="Object.keys(selectedProfiles).length">
+                <div v-for="item in Object.values(selectedProfiles)" class="selected-profiles__item">
+                    <div class="selected-profiles__picture">
+                        <img :src="item.photo_100" :key="item.id" alt="selected-img">
+                    </div>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
 <script>
     import axios from 'axios';
-    import querystring from 'qs';
-
-    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+    import debounce from 'lodash/debounce';
 
     export default {
         name: 'Home',
         data: () => ({
             id: '',
-            pending: false,
-            lastRequestId: true,
             lazyProfile: null,
             notFoundId: null,
-            cachedData: {}
+            selectedProfiles: {}
         }),
-        computed: {
-            queryParams() {
-                return {
-                    access_token: '205356fa205356fa205356fabb202335df22053205356fa7e20db7152664d1e0aacc722',
-                    user_ids: this.id,
-                    fields: [
-                        'first_name',
-                        'deactivated',
-                        'sex',
-                        'bdate',
-                        'photo_100',
-                        'domain'
-                    ],
-                    v: 5.52
-                }
-            }
-        },
         methods: {
-            fetchInfo() {
-                // pending?
-                if (this.pending) return;
-                // clean input?
-                if (!this.queryParams.user_ids) {
+            fetchInfo: debounce(function () {
+                if (!this.id) {
                     return this.lazyProfile = null;
                 }
-                // cached already ?
-                if (this.cachedData[this.queryParams.user_ids]) {
-                    if (this.cachedData[this.queryParams.user_ids] === 'not-found') {
-                        this.notFoundId = this.queryParams.user_ids;
-                        return this.lazyProfile = 'not-found';
-                    }
-                    return this.lazyProfile = Object.assign({}, this.cachedData[this.queryParams.user_ids]);
-                }
 
-                this.pending = true;
-                this.lastRequestId = this.id;
-
-                // axios.get('/profiles');
-                axios.get(
-                    corsProxy + `https://api.vk.com/method/users.get?${querystring.stringify(this.queryParams)}`,
-                )
-                .then(res => {
-                    console.log(res.data);
-                    const {response, error} = res.data;
-
-                    if (!error && !response[0].deactivated) {
-                        const userId = response[0].domain || response[0].id;
-
-                        this.cachedData[userId] = Object.assign({}, response[0]);
-                        this.lazyProfile = Object.assign({}, response[0]);
-                    }
-                    else {
-                        this.lazyProfile = 'not-found';
-                    }
-
-                    this.pending = false;
-                    if (this.lastRequestId !== this.id) {
-                        this.fetchInfo();
-                    }
-                    else {
-                        this.notFoundId = this.id;
-
-                        //cache not found profiles
-                        if (this.lazyProfile === 'not-found') {
-                            this.cachedData[this.notFoundId] = 'not-found';
+                axios.get(`/profiles/${ this.id }`)
+                    .then(res => {
+                        if (this.selectedProfiles[res.data.id]) {
+                            return this.lazyProfile = null;
                         }
-                    }
-                })
+                        this.lazyProfile = res.data;
+                    })
+                    .catch(err => {
+                        // console.log(err.response.data);
+                        this.lazyProfile = 'not-found';
+                        this.notFoundId = this.id;
+                    });
+            }, 500),
+            selectProfile() {
+                if (this.selectedProfiles[this.lazyProfile.id]) {
+                    this.notFoundId = this.id;
+                    return this.lazyProfile = 'already-selected';
+                }
+                this.selectedProfiles[this.lazyProfile.id] = this.lazyProfile;
+                this.lazyProfile = null;
             }
         },
         filters: {
@@ -157,6 +126,7 @@
                 }
             },
             defineAge(value) {
+                if (!value) return 'No info';
                 const bdate = value.split('.');
 
                 if (bdate.length === 3) {
@@ -169,9 +139,6 @@
                 return 'No info';
             }
         },
-        created() {
-
-        }
     }
 </script>
 
@@ -179,6 +146,7 @@
     .home {
         width: 1200px;
         margin: 0 auto;
+        height: 100%;
 
         &__title {
             text-align: center;
@@ -202,6 +170,7 @@
             justify-content: center;
             flex-wrap: wrap;
             align-items: center;
+            padding-bottom: 40px;
 
             .input-container {
                 width: 30%;
@@ -219,7 +188,8 @@
                     margin-bottom: 40px;
                     text-align: center;
 
-                    &:focus {
+                    &:focus::-webkit-input-placeholder {
+                        opacity: 0.5;
                     }
                     &:focus::-webkit-input-placeholder { /* Chrome/Opera/Safari */
                         color: #b5b5b5;
@@ -239,6 +209,7 @@
                 display: flex;
                 justify-content: center;
                 color: #FFFFFF;
+                height: 304px;
 
                 &__loader {
                     margin-top: 30px;
@@ -258,15 +229,12 @@
                     background-color: rgba(181, 181, 181, 0.34);
                     border-radius: 20px;
                     padding-bottom: 20px;
-                    cursor: pointer;
                     line-height: 1.4rem;
 
                     >* {
                         flex: 1 0 100%;
                     }
-                    &:hover {
-                        background-color: rgba(181, 181, 181, 0.47);
-                    }
+
                     &__text {
                         width: 80%;
                         font-size: 18px;
@@ -283,6 +251,14 @@
                         }
                     }
                 }
+
+                .profile-inner_hover {
+                    cursor: pointer;
+                    &:hover {
+                        background-color: rgba(181, 181, 181, 0.47);
+                    }
+                }
+
                 .profile-picture{
                     text-align: center;
                     margin: 20px;
@@ -294,11 +270,6 @@
                         display: inline-block;
                     }
                 }
-                &__fname{}
-                &__lname{}
-                &__sex{}
-                &__age{}
-                &__friends{}
             }
 
             .inner {
@@ -354,6 +325,19 @@
                 }
                 100% {
                     transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+                }
+            }
+        }
+        .selected-profiles {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            &__item {
+                padding: 20px 2000px;
+            }
+            &__picture {
+                img {
+                    border-radius: 50px;
                 }
             }
         }

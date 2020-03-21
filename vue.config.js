@@ -1,3 +1,6 @@
+require('dotenv').config();
+const backendCfg = require('./backend/config/config');
+
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -38,5 +41,14 @@ module.exports = {
                 { from: path.resolve(__dirname, 'frontend/src/assets/img'), to: 'assets/img' }, // copy img folder content to /dist/assets/img
             ]),
         ];
+        config.devServer = {
+            ...config.devServer,
+            proxy: {
+                '/': {
+                    target: `http://localhost:${backendCfg.app.port}`
+                },
+            },
+            port: process.env.PORT || 8080
+        };
     }
 };
