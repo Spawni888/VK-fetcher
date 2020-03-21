@@ -1,8 +1,8 @@
 <template>
     <div class="home">
-        <div class="home__title">
-            <span>Let's fetch some</span>
-        </div>
+<!--        <div class="home__title">-->
+<!--            <span>Let's fetch some</span>-->
+<!--        </div>-->
         <div class="home-input">
             <div class="input-container">
                 <input type="text" v-model="id" @input="fetchInfo" placeholder="PLACE VK-ID HERE">
@@ -63,14 +63,24 @@
             </div>
         </div>
         <transition name="fade-in" mode="out-in">
-            <div v-if="Object.keys(selectedProfiles).length" class="selected-profiles" :key="Object.keys(selectedProfiles).length">
-                <div v-for="item in Object.values(selectedProfiles)" class="selected-profiles__item">
-                    <div class="selected-profiles">
+            <div v-if="selectedValuesArray.length" class="selected-profiles" :key="selectedValuesArray.length">
+                <div
+                        v-for="item in selectedValuesArray"
+                        class="selected-profiles__item"
+                        @click="unselectProfile(item)">
 
-                    </div>
                     <div class="selected-profiles__picture">
                         <img :src="item.photo_100" :key="item.id" alt="selected-img">
                     </div>
+                    <div class="profile-hover">
+                        <div class="profile-hover__picture">
+                            <img src="@/assets/img/cross.png" alt="cross">
+                        </div>
+                        <div class="profile-hover__name">
+                            {{ item.first_name }} {{ item.last_name }}
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </transition>
@@ -80,26 +90,27 @@
 <script>
     import axios from 'axios';
     import debounce from 'lodash/debounce';
+    import  { mapGetters, mapMutations } from 'vuex';
 
     export default {
         name: 'Home',
         data: () => ({
             id: '',
             lazyProfile: null,
-            notFoundId: null,
-            selectedProfiles: {}
+            notFoundId: null
         }),
         methods: {
+            ...mapMutations([
+                'select',
+                'unselect'
+            ]),
             fetchInfo: debounce(function () {
-                if (!this.id) {
+                if (!this.id || this.isSelected({id: this.id})) {
                     return this.lazyProfile = null;
                 }
 
                 axios.get(`/profiles/${ this.id }`)
                     .then(res => {
-                        if (this.selectedProfiles[res.data.id]) {
-                            return this.lazyProfile = null;
-                        }
                         this.lazyProfile = res.data;
                     })
                     .catch(err => {
@@ -109,13 +120,26 @@
                     });
             }, 500),
             selectProfile() {
-                if (this.selectedProfiles[this.lazyProfile.id]) {
+                if (this.isSelected(this.lazyProfile)) {
                     this.notFoundId = this.id;
                     return this.lazyProfile = 'already-selected';
                 }
-                this.selectedProfiles[this.lazyProfile.id] = this.lazyProfile;
+                this.select(this.lazyProfile);
                 this.lazyProfile = null;
+            },
+            unselectProfile(profile) {
+                this.unselect(profile);
+
+                if (parseInt(this.id) === profile.id || parseInt(this.id) === profile.domain) {
+                    this.fetchInfo();
+                }
             }
+        },
+        computed: {
+            ...mapGetters([
+                'isSelected',
+                'selectedValuesArray'
+            ]),
         },
         filters: {
             defineSex(value) {
@@ -141,30 +165,15 @@
                 }
                 return 'No info';
             }
-        },
+        }
     }
 </script>
 
 <style scoped lang="scss">
     .home {
-        width: 1200px;
+        width: 80%;
         margin: 0 auto;
 
-        &__title {
-            text-align: center;
-            padding: 40px 20px;
-            span {
-                color: #FFF;
-                text-align: center;
-                font-family: "lato", sans-serif;
-                font-weight: 300;
-                font-size: 80px;
-                letter-spacing: 10px;
-                background: -webkit-linear-gradient(white, #38495a);
-                -webkit-background-clip: text;
-                 -webkit-text-fill-color: transparent;
-            }
-        }
 
         .home-input {
             display: flex;
@@ -331,17 +340,54 @@
             }
         }
         .selected-profiles {
+            max-width: 80%;
+            width: 100%;
+
+            margin: 0 auto;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-around;
+
             &__item {
-                padding: 10px 20px;
+                margin: 0 20px 30px 20px;
+                position: relative;
+                cursor: pointer;
+
+                &:hover {
+                    .profile-hover {
+                        opacity: 1;
+                    }
+                }
+                .profile-hover {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    opacity: 0;
+                    transition: opacity .3s;
+
+                    img {
+                        border-radius: 50px;
+                        width: 100px;
+                        height: 100px;
+                    }
+
+                    &__name {
+                        position: absolute;
+                        left: -50%;
+                        color: #FFFFFF;
+                        opacity: 0.8;
+                        text-align: center;
+                        min-width: 200%;
+                    }
+                }
+
             }
             &__picture {
                 img {
                     border-radius: 50px;
                 }
             }
+
         }
 
         .fade-in-enter-active {
@@ -358,19 +404,6 @@
             100% {
                 opacity: 1;
             }
-        }
-
-        .fade-out-enter,
-        .fade-out-leave-to {
-            opacity: 0;
-        }
-        .fade-out-enter-active,
-        .fade-out-leave-active {
-            transition: opacity .5s ease;
-        }
-        .fade-out-leave,
-        .fade-out-enter-to{
-            opacity: 1;
         }
 
     }

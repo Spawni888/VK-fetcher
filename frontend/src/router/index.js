@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Main from '@/views/Main'
+import FriendsList from '@/views/FriendsList'
 import Home from "@/views/Home";
 
 Vue.use(VueRouter);
@@ -12,6 +12,11 @@ const routes = [
         name: 'Home'
     },
     {
+        path: '/friends-list',
+        component: FriendsList,
+        name: 'FriendsList'
+    },
+    {
         path: '*',
         redirect: '/'
     }
@@ -20,8 +25,11 @@ const routes = [
 const router = new VueRouter({
     mode: 'history',
     base: process.env.BASE_URL,
-    scrollBehavior () {
-        return { x: 0, y: 0 }
+    scrollBehavior (to, from) {
+        return window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     },
     routes
 });
