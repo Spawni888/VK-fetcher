@@ -65,6 +65,9 @@
         <transition name="fade-in" mode="out-in">
             <div v-if="Object.keys(selectedProfiles).length" class="selected-profiles" :key="Object.keys(selectedProfiles).length">
                 <div v-for="item in Object.values(selectedProfiles)" class="selected-profiles__item">
+                    <div class="selected-profiles">
+
+                    </div>
                     <div class="selected-profiles__picture">
                         <img :src="item.photo_100" :key="item.id" alt="selected-img">
                     </div>
@@ -146,7 +149,6 @@
     .home {
         width: 1200px;
         margin: 0 auto;
-        height: 100%;
 
         &__title {
             text-align: center;
@@ -333,7 +335,7 @@
             flex-wrap: wrap;
             justify-content: space-around;
             &__item {
-                padding: 20px 2000px;
+                padding: 10px 20px;
             }
             &__picture {
                 img {

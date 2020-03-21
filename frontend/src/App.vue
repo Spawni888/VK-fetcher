@@ -7,4 +7,12 @@
     </div>
 </template>
 
+<script>
+    export default {
+        created() {
+            window.scrollTo(0, 0);
+        }
+    }
+</script>
+
 <style src="./assets/scss/main.scss" lang="scss"></style>
