@@ -3,17 +3,17 @@
         <div id='stars'></div>
         <div id='stars2'></div>
         <div id='stars3'></div>
-        <transition name="slide-in-blurred-right" mode="out-in">
+        <transition name="slide-left-right" mode="out-in">
             <div class="title-container" :key="pageInfo.pageTitle">
                 <div class="core-title">
                     <span>{{ pageInfo.pageTitle }}</span>
                 </div>
             </div>
         </transition>
-        <transition mode="out-in" name="slide-in-blurred-right">
-            <router-view @add-to-users-friends="addToUsersFriends" />
+        <transition mode="out-in" name="slide-left-right">
+            <router-view/>
         </transition>
-        <transition mode="out-in" name="slide-in-blurred-right">
+        <transition mode="out-in" name="slide-right">
             <div v-if="selectedValuesArray.length" class="neon-button" :key="pageInfo.buttonText">
                 <router-link tag="a" :to="pageInfo.route" >
                     <span></span>
@@ -57,11 +57,6 @@
                             }
                         }
                 }
-            }
-        },
-        methods: {
-            addToUsersFriends(friends) {
-                console.log(friends)
             }
         }
     }

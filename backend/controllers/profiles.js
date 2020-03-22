@@ -19,12 +19,7 @@ const friendsQueryParams =  {
     access_token: '205356fa205356fa205356fabb202335df22053205356fa7e20db7152664d1e0aacc722',
     user_id: null,
     fields: [
-        'first_name',
         'deactivated',
-        'sex',
-        'bdate',
-        'photo_100',
-        'domain'
     ],
     v: 5.52
 };

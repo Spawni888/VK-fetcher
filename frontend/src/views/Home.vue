@@ -1,8 +1,5 @@
 <template>
     <div class="home">
-<!--        <div class="home__title">-->
-<!--            <span>Let's fetch some</span>-->
-<!--        </div>-->
         <div class="home-input">
             <div class="input-container">
                 <input type="text" v-model="id" @input="fetchInfo" placeholder="PLACE VK-ID HERE">
@@ -17,7 +14,7 @@
                         <div class="profile-inner__text">
                             Profile with id:
                             <br>
-                            <span>{{ this.notFoundId }}</span>
+                            <span>{{ notFoundId }}</span>
                             <br>
                             Not found.
                             <br>
@@ -26,32 +23,32 @@
                     </div>
                     <div
                             v-else-if="lazyProfile"
-                            :key="this.lazyProfile.id"
+                            :key="lazyProfile.id"
                             class="profile-inner profile-inner_hover"
                             @click="selectProfile">
 
                         <div class="profile-picture">
-                            <img :src="this.lazyProfile.photo_100" alt="profile-img">
+                            <img :src="lazyProfile.photo_100" alt="profile-img">
                         </div>
                         <div class="lazy-profile__fname">
                              First name:
-                            {{ this.lazyProfile.first_name }}
+                            {{ lazyProfile.first_name }}
                         </div>
                         <div class="lazy-profile__lname">
                             Last name:
-                            {{ this.lazyProfile.last_name }}
+                            {{ lazyProfile.last_name }}
                         </div>
                         <div class="lazy-profile__sex">
                             Sex:
-                            {{ this.lazyProfile.sex | defineSex}}
+                            {{ lazyProfile.sex | defineSex}}
                         </div>
                         <div class="lazy-profile__age">
                             Age:
-                            {{ this.lazyProfile.bdate | defineAge }}
+                            {{ lazyProfile.bdate | defineAge }}
                         </div>
                         <div class="lazy-profile__friends">
                             Friends count:
-                            {{ this.lazyProfile.friends.count }}
+                            {{ lazyProfile.friends.count }}
                         </div>
                     </div>
                     <div v-else class="lazy-profile__loader" key="loader">
@@ -90,7 +87,7 @@
 <script>
     import axios from 'axios';
     import debounce from 'lodash/debounce';
-    import  { mapGetters, mapMutations } from 'vuex';
+    import  { mapGetters, mapMutations, mapActions } from 'vuex';
 
     export default {
         name: 'Home',
@@ -102,7 +99,10 @@
         methods: {
             ...mapMutations([
                 'select',
-                'unselect'
+                'unselect',
+            ]),
+            ...mapActions([
+                'fetchFriendsFriends'
             ]),
             fetchInfo: debounce(function () {
                 if (!this.id || this.isSelected({id: this.id})) {
@@ -125,6 +125,8 @@
                     return this.lazyProfile = 'already-selected';
                 }
                 this.select(this.lazyProfile);
+                this.fetchFriendsFriends(this.lazyProfile);
+
                 this.lazyProfile = null;
             },
             unselectProfile(profile) {
@@ -173,7 +175,6 @@
     .home {
         width: 80%;
         margin: 0 auto;
-
 
         .home-input {
             display: flex;

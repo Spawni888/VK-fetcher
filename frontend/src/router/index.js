@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import store from '@/store/index';
 import VueRouter from 'vue-router'
 import FriendsList from '@/views/FriendsList'
 import Home from "@/views/Home";
@@ -14,7 +15,11 @@ const routes = [
     {
         path: '/friends-list',
         component: FriendsList,
-        name: 'FriendsList'
+        name: 'FriendsList',
+        beforeEnter: (to, from, next) => {
+            store.commit('sortFriends');
+            next();
+        }
     },
     {
         path: '*',
