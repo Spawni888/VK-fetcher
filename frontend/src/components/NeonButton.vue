@@ -1,8 +1,21 @@
-.neon-button {
-    position: fixed;
-    right: 0;
-    bottom: 0;
+<template>
+    <router-link tag="a" :to="route ? route : $route">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <slot/>
+    </router-link>
+</template>
 
+<script>
+    export default {
+        name: "NeonButton",
+        props: ['route']
+    }
+</script>
+
+<style scoped lang="scss">
     a{
         color: #03E9F4;
         display: inline-block;
@@ -16,6 +29,7 @@
         text-transform: uppercase;
         transition: 0.5s;
         -webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
+
     }
 
     a{
@@ -111,5 +125,4 @@
             bottom: 100%;
         }
     }
-}
-
+</style>

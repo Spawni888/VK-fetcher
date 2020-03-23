@@ -10,7 +10,7 @@ const userQueryParams =  {
         'sex',
         'bdate',
         'photo_100',
-        'domain'
+        'domain',
     ],
     v: 5.52
 };
@@ -19,7 +19,12 @@ const friendsQueryParams =  {
     access_token: '205356fa205356fa205356fabb202335df22053205356fa7e20db7152664d1e0aacc722',
     user_id: null,
     fields: [
+        'first_name',
         'deactivated',
+        'sex',
+        'bdate',
+        'photo_100',
+        'domain',
     ],
     v: 5.52
 };
@@ -48,6 +53,24 @@ async function getProfile(ctx) {
     ctx.body = {...userRes[0], friends: friendRes};
 }
 
+async function getFriends(ctx) {
+    friendsQueryParams.user_id = ctx.params.id;
+    friendsQueryParams.fields = ['deactivated'];
+
+    const friendsQueryStr = querystring.stringify(friendsQueryParams);
+    console.log(friendsQueryStr);
+    const friends = await axios.get(`https://api.vk.com/method/friends.get?${friendsQueryStr}`);
+
+    const {response, error} = friends;
+
+    if (error || response.deactivated) {
+        ctx.throw(422, error && error.error_msg || response.deactivated);
+    }
+
+    ctx.body = response.count;
+}
+
 module.exports = {
-    getProfile
+    getProfile,
+    getFriends
 };

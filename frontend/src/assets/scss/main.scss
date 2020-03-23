@@ -1,6 +1,5 @@
 @import "utils/libs";
 @import "components/bgStars";
-@import "components/neonButton";
 
 #app {
     overflow: hidden;
@@ -27,6 +26,11 @@
     }
 }
 
+.neon-button {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+}
 
 .slide-right-enter-active {
      animation: slide-in-blurred-right 1s ease-in-out both;
@@ -80,6 +84,22 @@
         transform-origin: 50% 50%;
         -webkit-filter: blur(0);
         filter: blur(0);
+        opacity: 1;
+    }
+}
+
+.fade-in-enter-active {
+    animation: fade-in .5s ease-in-out both;
+}
+.fade-in-leave-active {
+    animation: fade-in .5s ease-in-out both reverse;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
         opacity: 1;
     }
 }

@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import logger from "vuex/dist/logger";
 import axios from 'axios';
+import querystring from 'qs';
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -17,9 +19,12 @@ export default new Vuex.Store({
         isSelected: state => ({ id }) => {
             return (id in state.selectedProfiles);
         },
-        friends(state) {
-            return state._friends;
+        profilesFriends(state) {
+            return [...state._friends];
         },
+        getMutualFriends: state => (id) => {
+            return state.friendsMap[id];
+        }
     },
     mutations: {
         select(state, profile) {
@@ -32,39 +37,64 @@ export default new Vuex.Store({
             delete tempObj[id];
             state.selectedProfiles = tempObj;
         },
-        parseFriends(state, profile) {
-            if (!profile.friends.length) return;
-            if (!state.friendsMap[profile.id]) {
-                state.friendsMap[profile.id] = [];
-            }
+        createFriendsMap(state, profile) {
+            const profileFriends = profile.friends.items;
 
-            profile.friends.forEach(friend => {
-                state.friendsMap[profile.id].push(friend);
+            profileFriends.forEach(friend => {
+                if (!state.friendsMap[friend.id]) {
+                    state.friendsMap[friend.id] = [ profile ];
+                }
+                else {
+                    state.friendsMap[friend.id].push(profile);
+                }
             });
-            state._friends = state._friends.concat(profile.friends);
-            console.log(state._friends);
+
         },
-        sortFriends(state) {
-            console.log(state._friends);
-            state._friends = state._friends.sort((a, b) => a.first_name.localeCompare(b.first_name));
+        createFriendsList(state) {
+            let friendsList = [];
+
+            for (let id in state.selectedProfiles) {
+                let profile = state.selectedProfiles[id];
+
+                friendsList = friendsList.concat(profile.friends.items);
+            }
+            friendsList = Array.from(new Set(friendsList));
+
+            // prevent friends duplication
+            const friendsTempHash = {};
+
+            friendsList.forEach(friend => {
+                if (friendsTempHash[friend.id]) {
+                    friendsTempHash[friend.id]++;
+                }
+                else {
+                    friendsTempHash[friend.id] = 1;
+                }
+            });
+            friendsList = friendsList.filter(friend => {
+                if (!--friendsTempHash[friend.id] ) {
+                    if (!friend.deactivated) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+            state._friends = friendsList.sort((a, b) => a.first_name.localeCompare(b.first_name));
         }
     },
     actions: {
-        async fetchFriendsFriends({state, commit}, profile) {
-            const updatedProfileFriends = [];
-            const updatedProfile = Object.assign({}, profile);
-            //TODO: create in back route to fetch friends-friends (USER.gets a lot of ids)
+        async getFriendsCount({ state, commit }, { start, end }) {
+            for (let i = start; i < end; i++) {
+                if (!state._friends[i] || state._friends[i].friendsCount) continue;
 
-            // for (let friend of profile.friends.items) {
-            //     await axios.get(`/profiles/${ friend.id }`)
-            //         .then(res => {
-            //             updatedProfileFriends.push(res.data);
-            //         })
-            //         .catch(err => console.log(err.response.data));
-            // }
-            // updatedProfile.friends = updatedProfileFriends;
-
-            commit('parseFriends', updatedProfile);
+                await axios.get(`/profiles/${state._friends[i].id}`)
+                    .then(res => {
+                        const updatedFriends = [...state._friends];
+                        updatedFriends[i].friendsCount = res.data.friends.count;
+                        state._friends = updatedFriends;
+                    })
+                    .catch()
+            }
         }
     },
     modules: {

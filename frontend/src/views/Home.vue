@@ -87,7 +87,7 @@
 <script>
     import axios from 'axios';
     import debounce from 'lodash/debounce';
-    import  { mapGetters, mapMutations, mapActions } from 'vuex';
+    import  { mapGetters, mapMutations} from 'vuex';
 
     export default {
         name: 'Home',
@@ -100,9 +100,7 @@
             ...mapMutations([
                 'select',
                 'unselect',
-            ]),
-            ...mapActions([
-                'fetchFriendsFriends'
+                'createFriendsMap'
             ]),
             fetchInfo: debounce(function () {
                 if (!this.id || this.isSelected({id: this.id})) {
@@ -125,14 +123,14 @@
                     return this.lazyProfile = 'already-selected';
                 }
                 this.select(this.lazyProfile);
-                this.fetchFriendsFriends(this.lazyProfile);
+                this.createFriendsMap(this.lazyProfile);
 
                 this.lazyProfile = null;
             },
             unselectProfile(profile) {
                 this.unselect(profile);
 
-                if (parseInt(this.id) === profile.id || parseInt(this.id) === profile.domain) {
+                if (parseInt(this.id) === profile.id || String(this.id) === String(profile.domain)) {
                     this.fetchInfo();
                 }
             }

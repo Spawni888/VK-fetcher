@@ -17,7 +17,10 @@ const routes = [
         component: FriendsList,
         name: 'FriendsList',
         beforeEnter: (to, from, next) => {
-            store.commit('sortFriends');
+            store.commit('createFriendsList');
+
+            //preload 21 profiles friends
+            store.dispatch('getFriendsCount', {start: 0, end: 21});
             next();
         }
     },
@@ -39,4 +42,4 @@ const router = new VueRouter({
     routes
 });
 
-export default router
+export default router;

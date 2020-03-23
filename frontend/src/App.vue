@@ -15,13 +15,9 @@
         </transition>
         <transition mode="out-in" name="slide-right">
             <div v-if="selectedValuesArray.length" class="neon-button" :key="pageInfo.buttonText">
-                <router-link tag="a" :to="pageInfo.route" >
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                <neon-button :route="pageInfo.route">
                     {{ pageInfo.buttonText }}
-                </router-link>
+                </neon-button>
             </div>
         </transition>
     </div>
@@ -29,6 +25,7 @@
 
 <script>
     import  { mapGetters } from 'vuex';
+    import NeonButton from '@/components/NeonButton';
 
     export default {
         data: () => ({
@@ -58,6 +55,9 @@
                         }
                 }
             }
+        },
+        components: {
+            NeonButton
         }
     }
 </script>
