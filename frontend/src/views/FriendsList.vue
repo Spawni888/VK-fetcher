@@ -9,7 +9,8 @@
                         v-for="friend in paginatedFriends"
                         :key="friend.id"
                         class="friend"
-                        :style="{backgroundColor: `hsl(210, 23%, ${computeBrightness(friend)}%)`}">
+                        :style="{border: `5px solid hsl(210, 23%, ${computeBrightness(friend)}%)`}"
+                        @click="openInfo(friend)">
                     <div class="friend__picture">
                         <img :src="friend.photo_100" alt="profile-img">
                     </div>
@@ -54,7 +55,8 @@
 
 <script>
     import { mapGetters, mapActions } from 'vuex';
-    import NeonButton from "../components/NeonButton";
+    import NeonButton from "@/components/NeonButton";
+    import filtersMixin from '@/mixins/filtersMixin';
 
     export default {
         name: "FriendsList",
@@ -67,16 +69,16 @@
                'getFriendsCount'
             ]),
             increasePages() {
-                this.pages++;
                 this.isPageBottom = false;
+                let start = 21 * this.pages;
 
-                let start = 21 * (this.pages - 1);
                 let end = start + 21;
-
                 if (end > this.profilesFriends.length) {
+
                     end = this.profilesFriends.length;
                 }
-                this.getFriendsCount({ start, end })
+                this.getFriendsCount({start, end});
+                this.pages++;
             },
             onScroll() {
                 let bottomOfWindow =
@@ -86,14 +88,16 @@
                 this.isPageBottom = bottomOfWindow;
             },
             computeBrightness({ id }) {
-                //TODO: change color and this.
                 const mutualFriendsCount = this.getMutualFriends(id).length;
-                let panelLight = mutualFriendsCount * 10 + 20;
+                let panelLight = mutualFriendsCount * 15 + 20;
 
                 if (panelLight > 100) {
                     return 100;
                 }
                 return panelLight;
+            },
+            openInfo({ id }) {
+                this.$router.push({name: 'FriendInfo', params: { id }})
             }
         },
         computed: {
@@ -112,37 +116,23 @@
                 return this.profilesFriends.slice(0, end);
             }
         },
-        filters: {
-            defineSex(value) {
-                switch (value) {
-                    case 2:
-                        return 'Male';
-                    case 1:
-                        return 'Female';
-                    default:
-                        return 'No info'
-                }
-            },
-            defineAge(value) {
-                if (!value) return 'No info';
-                const bdate = value.split('.');
-
-                if (bdate.length === 3) {
-                    const [day, month, year] = bdate;
-                    const ageInMs = new Date() - new Date(year, month, day + 1).getTime();
-                    const ageDate = new Date(ageInMs);
-
-                    return Math.abs(ageDate.getUTCFullYear() - 1970);
-                }
-                return 'No info';
-            }
-        },
+        mixins: [filtersMixin],
         mounted() {
             this.pages = 1;
             window.addEventListener('scroll', this.onScroll);
         },
         destroyed() {
             window.removeEventListener('scroll', this.onScroll);
+        },
+        beforeRouteLeave(to, from, next) {
+            if (this.pages === 1) return next();
+            setTimeout(() => next(), this.pages * 250 + 400);
+
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            next(false);
         },
         components: {
             NeonButton
@@ -167,16 +157,16 @@
             min-width: 200px;
             background-color: #38495a;
             border-radius: 20px;
+            cursor: pointer;
+            &:hover {
+                background-color: #556b7c;
+            }
             &__picture {
                 padding: 20px;
                 img {
                     border-radius: 50px;
                 }
             }
-            &__fname {}
-            &__lname {}
-            &__sex {}
-            &__age {}
             &__friends {
                 padding-bottom: 10px;
             }

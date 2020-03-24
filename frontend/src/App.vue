@@ -45,6 +45,14 @@
                                 name: 'FriendsList'
                             }
                         };
+                    case 'FriendInfo':
+                        return {
+                            pageTitle: 'Person Information',
+                            buttonText: 'Back to Friends',
+                            route: {
+                                name: 'FriendsList'
+                            }
+                        };
                     default:
                         return {
                             pageTitle: 'Friends List',

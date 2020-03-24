@@ -13,6 +13,9 @@ export default new Vuex.Store({
         _friends: []
     },
     getters: {
+        selectedProfilesObj(state) {
+            return Object.assign({}, state.selectedProfiles);
+        },
         selectedValuesArray(state) {
             return Object.values(state.selectedProfiles);
         },
@@ -48,7 +51,16 @@ export default new Vuex.Store({
                     state.friendsMap[friend.id].push(profile);
                 }
             });
+        },
+        clearFriendsMap(state, profile) {
+            const profileFriends = profile.friends.items;
+            let updatedFriendsMap = Object.assign({}, state.friendsMap);
 
+            profileFriends.forEach(friend => {
+                updatedFriendsMap[friend.id] = updatedFriendsMap[friend.id]
+                    .filter(_profile => _profile.id !== profile.id);
+            });
+            state.friendsMap = updatedFriendsMap;
         },
         createFriendsList(state) {
             let friendsList = [];
@@ -87,10 +99,10 @@ export default new Vuex.Store({
             for (let i = start; i < end; i++) {
                 if (!state._friends[i] || state._friends[i].friendsCount) continue;
 
-                await axios.get(`/profiles/${state._friends[i].id}`)
+                await axios.get(`/profiles/friends/${state._friends[i].id}`)
                     .then(res => {
                         const updatedFriends = [...state._friends];
-                        updatedFriends[i].friendsCount = res.data.friends.count;
+                        updatedFriends[i].friendsCount = res.data.count;
                         state._friends = updatedFriends;
                     })
                     .catch()

@@ -2,7 +2,7 @@
     <div class="home">
         <div class="home-input">
             <div class="input-container">
-                <input type="text" v-model="id" @input="fetchInfo" placeholder="PLACE VK-ID HERE">
+                <input type="text" v-model="id" @input="getProfileInfo" placeholder="PLACE VK-ID HERE">
             </div>
 
             <div class="lazy-profile">
@@ -81,6 +81,18 @@
                 </div>
             </div>
         </transition>
+        <transition name="fade-in">
+            <div v-if="showErrorModal" class="modal-error">
+                <div class="modal-error__title">
+                    Please start app server
+                </div>
+                <div class="modal-error__text">
+                    Type
+                    <span>yarn start</span>
+                    in the new terminal window
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -88,31 +100,36 @@
     import axios from 'axios';
     import debounce from 'lodash/debounce';
     import  { mapGetters, mapMutations} from 'vuex';
+    import filtersMixin from "@/mixins/filtersMixin";
 
     export default {
         name: 'Home',
         data: () => ({
             id: '',
             lazyProfile: null,
-            notFoundId: null
+            notFoundId: null,
+            showErrorModal: false
         }),
         methods: {
             ...mapMutations([
                 'select',
                 'unselect',
-                'createFriendsMap'
+                'createFriendsMap',
+                'clearFriendsMap'
             ]),
-            fetchInfo: debounce(function () {
+            getProfileInfo: debounce(function () {
                 if (!this.id || this.isSelected({id: this.id})) {
                     return this.lazyProfile = null;
                 }
 
-                axios.get(`/profiles/${ this.id }`)
+                axios.get(`/profiles/profile-and-friends/${ this.id }`)
                     .then(res => {
                         this.lazyProfile = res.data;
                     })
                     .catch(err => {
-                        // console.log(err.response.data);
+                        if (err.response.status === 500) {
+                            return this.showErrorModal = true;
+                        }
                         this.lazyProfile = 'not-found';
                         this.notFoundId = this.id;
                     });
@@ -129,9 +146,10 @@
             },
             unselectProfile(profile) {
                 this.unselect(profile);
+                this.clearFriendsMap(profile);
 
                 if (parseInt(this.id) === profile.id || String(this.id) === String(profile.domain)) {
-                    this.fetchInfo();
+                    this.getProfileInfo();
                 }
             }
         },
@@ -141,31 +159,7 @@
                 'selectedValuesArray'
             ]),
         },
-        filters: {
-            defineSex(value) {
-                switch (value) {
-                    case 2:
-                        return 'Male';
-                    case 1:
-                        return 'Female';
-                    default:
-                        return 'No info'
-                }
-            },
-            defineAge(value) {
-                if (!value) return 'No info';
-                const bdate = value.split('.');
-
-                if (bdate.length === 3) {
-                    const [day, month, year] = bdate;
-                    const ageInMs = new Date() - new Date(year, month, day + 1).getTime();
-                    const ageDate = new Date(ageInMs);
-
-                    return Math.abs(ageDate.getUTCFullYear() - 1970);
-                }
-                return 'No info';
-            }
-        }
+        mixins: [filtersMixin]
     }
 </script>
 
@@ -232,21 +226,16 @@
 
                 .profile-inner {
                     display: flex;
-                    flex-wrap: wrap;
                     justify-content: center;
-                    width: 20%;
                     text-align: center;
                     background-color: rgba(181, 181, 181, 0.34);
                     border-radius: 20px;
                     padding-bottom: 20px;
                     line-height: 1.4rem;
-
-                    >* {
-                        flex: 1 0 100%;
-                    }
+                    flex-direction: column;
+                    min-width: 218px;
 
                     &__text {
-                        width: 80%;
                         font-size: 18px;
                         margin: 10px;
                         line-height: 1.4rem;
@@ -405,5 +394,29 @@
             }
         }
 
+    }
+    .modal-error {
+        z-index: 99;
+        position: fixed;
+        height: 100vh;
+        width: 100vw;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #FFFFFF;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        &__title {
+            font-size: 80px;
+            padding-bottom: 40px;
+        }
+        &__text {
+            font-size: 40px;
+            span {
+                color: #346ffa;
+            }
+        }
     }
 </style>

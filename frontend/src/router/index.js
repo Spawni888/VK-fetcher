@@ -3,6 +3,7 @@ import store from '@/store/index';
 import VueRouter from 'vue-router'
 import FriendsList from '@/views/FriendsList'
 import Home from "@/views/Home";
+import FriendInfo from "@/views/FriendInfo";
 
 Vue.use(VueRouter);
 
@@ -11,6 +12,11 @@ const routes = [
         path: '/',
         component: Home,
         name: 'Home'
+    },
+    {
+        path: '/friend/:id',
+        component: FriendInfo,
+        name: 'FriendInfo'
     },
     {
         path: '/friends-list',
@@ -41,5 +47,9 @@ const router = new VueRouter({
     },
     routes
 });
+
+// router.beforeEach((to, from, next) => {
+//
+// });
 
 export default router;

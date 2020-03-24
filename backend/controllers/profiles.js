@@ -2,7 +2,7 @@ const querystring = require('qs');
 const axios = require('axios');
 
 const userQueryParams =  {
-    access_token: '205356fa205356fa205356fabb202335df22053205356fa7e20db7152664d1e0aacc722',
+    access_token: process.env.VK_ACCESS_TOKEN,
     user_ids: null,
     fields: [
         'first_name',
@@ -16,7 +16,7 @@ const userQueryParams =  {
 };
 
 const friendsQueryParams =  {
-    access_token: '205356fa205356fa205356fabb202335df22053205356fa7e20db7152664d1e0aacc722',
+    access_token: process.env.VK_ACCESS_TOKEN,
     user_id: null,
     fields: [
         'first_name',
@@ -24,6 +24,33 @@ const friendsQueryParams =  {
         'sex',
         'bdate',
         'photo_100',
+        'domain',
+    ],
+    v: 5.52
+};
+
+const wallQueryParams = {
+    access_token: process.env.VK_ACCESS_TOKEN,
+    owner_id: null,
+    offset: 0,
+    count: 21,
+    fields: [
+        'id',
+    ],
+    v: 5.52
+};
+
+const fullProfileQueryParams = {
+    access_token: process.env.VK_ACCESS_TOKEN,
+    user_ids: null,
+    fields: [
+        'first_name',
+        'deactivated',
+        'sex',
+        'bdate',
+        'photo_200_orig',
+        'photo_200',
+        'photo_400_orig',
         'domain',
     ],
     v: 5.52
@@ -54,23 +81,48 @@ async function getProfile(ctx) {
 }
 
 async function getFriends(ctx) {
-    friendsQueryParams.user_id = ctx.params.id;
-    friendsQueryParams.fields = ['deactivated'];
+    const friendsCountQueryParams = Object.assign({}, friendsQueryParams);
+    friendsCountQueryParams.user_id = ctx.params.id;
+    friendsCountQueryParams.fields = ['deactivated'];
 
-    const friendsQueryStr = querystring.stringify(friendsQueryParams);
-    console.log(friendsQueryStr);
+    const friendsQueryStr = querystring.stringify(friendsCountQueryParams);
     const friends = await axios.get(`https://api.vk.com/method/friends.get?${friendsQueryStr}`);
+    const {response, error} = friends.data;
 
-    const {response, error} = friends;
-
-    if (error || response.deactivated) {
-        ctx.throw(422, error && error.error_msg || response.deactivated);
+    if (error) {
+        return ctx.body = {count: 0};
     }
+    ctx.body = response;
+}
 
-    ctx.body = response.count;
+async function getProfileWall(ctx) {
+    wallQueryParams.owner_id = ctx.params.id;
+    const wallQueryStr = querystring.stringify(wallQueryParams);
+    const wall = await axios.get(`https://api.vk.com/method/wall.get?${wallQueryStr}`);
+    const wallResponse = wall.data.response;
+    const wallError = wall.data.error;
+
+    // if (error) {
+    //     ctx.throw(422, error && error.error_msg || response[0].deactivated);
+    // }
+    ctx.body = wallResponse;
+}
+
+async function getFullProfileInfo(ctx) {
+    fullProfileQueryParams.user_ids = ctx.params.id;
+    const userQueryStr = querystring.stringify(fullProfileQueryParams);
+    const user = await axios.get(`https://api.vk.com/method/users.get?${userQueryStr}`);
+    const {response, error} = user.data;
+
+    if (error ||response[0].deactivated) {
+        ctx.throw(422, error && error.error_msg || response[0].deactivated);
+    }
+    ctx.body = response[0];
 }
 
 module.exports = {
     getProfile,
-    getFriends
+    getFriends,
+    getProfileWall,
+    getFullProfileInfo
 };
