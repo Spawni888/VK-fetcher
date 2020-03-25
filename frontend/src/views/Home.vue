@@ -90,8 +90,6 @@
                     Type
                     <span>yarn start</span>
                     in a new terminal window.
-                    <br>
-                    Reload page after that.
                 </div>
             </div>
         </transition>

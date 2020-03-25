@@ -1,0 +1,29 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true
+    },
+    "parserOptions": {
+        "parser": "babel-eslint"
+    },
+    "extends": [
+        "airbnb-base",
+        "plugin:vue/recommended"
+    ],
+    "rules": {
+        "no-console": "off",
+        "indent": ["error", 4],
+        "consistent-return": "off",
+        "no-mixed-operators": "off",
+        "import/no-unresolved": "off",
+        "no-await-in-loop": "off",
+        "no-underscore-dangle": "off",
+        "no-return-assign": "off",
+        "prefer-destructuring": "off",
+        "no-param-reassign": "off",
+        "max-len": ["error", { "code": 120 }],
+        "no-plusplus": "off",
+        "no-continue": "off"
+    }
+}

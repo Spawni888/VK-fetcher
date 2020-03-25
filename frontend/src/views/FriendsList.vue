@@ -124,23 +124,6 @@
         destroyed() {
             window.removeEventListener('scroll', this.onScroll);
         },
-        beforeRouteLeave(to, from, next) {
-            // wait for scroll animation end before routing
-            const scrollFromTop =
-                Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop);
-
-            if (scrollFromTop === 0) {
-                return next();
-            }
-            else {
-                setTimeout(() => next(), scrollFromTop * 250 / 2058 + 400);
-            }
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-            next(false);
-        },
         components: {
             NeonButton
         }

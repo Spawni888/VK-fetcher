@@ -2,12 +2,12 @@ export default {
     filters: {
         defineSex(value) {
             switch (value) {
-                case 2:
-                    return 'Male';
-                case 1:
-                    return 'Female';
-                default:
-                    return 'No info'
+            case 2:
+                return 'Male';
+            case 1:
+                return 'Female';
+            default:
+                return 'No info';
             }
         },
         defineAge(value) {
@@ -22,6 +22,6 @@ export default {
                 return Math.abs(ageDate.getUTCFullYear() - 1970);
             }
             return 'No info';
-        }
-    }
-}
+        },
+    },
+};

@@ -1,7 +1,7 @@
 const Router = require('koa-router');
 const profileController = require('../controllers/profiles');
 
-const router = new Router({prefix: '/profiles'});
+const router = new Router({ prefix: '/profiles' });
 
 router
     .get('/profile-and-friends/:id', profileController.getProfile)

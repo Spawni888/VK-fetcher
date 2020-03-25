@@ -1,19 +1,17 @@
-# vk-fetcher
+# VK-Fetcher
 
 ## Project setup
 ```
 yarn install
 ```
-
-### Compiles and hot-reloads for development
+## Project start
+#### Start front
 ```
 yarn serve
 ```
-
-### Compiles and minifies for production
+#### Start back
 ```
-yarn build
+yarn start
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+

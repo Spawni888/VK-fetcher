@@ -70,11 +70,12 @@
         <div class="wall-container">
             <div class="title-container">
                 <div class="core-title">
-                    <span>Wall</span>
+                    <span>{{ wall === null ? 'Wall is hidden, sorry' : 'Wall' }}</span>
                 </div>
             </div>
             <profile-wall v-if="wall && profile" :wall="wall" :profile="profile"></profile-wall>
         </div>
+
         <transition name="slide-right">
             <div
                     v-if="isPageBottom"
@@ -90,7 +91,7 @@
 <script>
     import axios from 'axios';
     import filtersMixin from '@/mixins/filtersMixin';
-    import ProfileWall from "@/components/ProfileWall";
+    import ProfileWall from "@/components/wall/ProfileWall";
     import { mapGetters } from 'vuex';
     import NeonButton from "@/components/NeonButton";
 
@@ -120,9 +121,11 @@
                 axios.get(`/profiles/profile-wall/${ this.$route.params.id }/0`)
                     .then(res => {
                         this.wall = res.data;
-                        console.log(res.data);
+                        window.addEventListener('scroll', this.onScroll.bind(this));
                     })
-                    .catch();
+                    .catch(err => {
+                        this.wall = null;
+                    });
 
                 //create selected friends array
                 this.getMutualFriends(this.$route.params.id).forEach(mutualFr => {
@@ -142,16 +145,16 @@
             },
             async showMorePosts(event) {
                 event.target.blur();
+                this.isPageBottom = false;
 
                 const post = await axios.get(`/profiles/profile-wall/${ this.$route.params.id }/${this.wallPosts}`)
                     .then(res => {
                         const wallCopy = Object.assign({}, this.wall);
                         wallCopy.items.push(...res.data.items);
                         this.wall = wallCopy;
-                        console.log(this.wall);
                     })
                     .catch(err => {
-                        console.log('Press one more');
+                        this.showMorePosts.call(this);
                     });
                 this.wallPosts++;
             }
@@ -159,7 +162,6 @@
         created() {
             this.getPageInfo();
             this.wallPosts = 1;
-            window.addEventListener('scroll', this.onScroll);
         },
         destroyed() {
             window.removeEventListener('scroll', this.onScroll);

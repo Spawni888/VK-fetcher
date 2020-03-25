@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    import WallPost from "@/components/WallPost";
+    import WallPost from "@/components/wall/WallPost";
 
     export default {
         name: "ProfileWall",
