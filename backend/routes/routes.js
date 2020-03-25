@@ -7,6 +7,7 @@ router
     .get('/profile-and-friends/:id', profileController.getProfile)
     .get('/profile-full/:id', profileController.getFullProfileInfo)
     .get('/friends/:id', profileController.getFriends)
-    .get('/profile-wall/:id', profileController.getProfileWall);
+    .get('/profile-wall/:id/:offset', profileController.getProfileWall)
+    .get('/group/:id', profileController.getGroup);
 
 module.exports = router;

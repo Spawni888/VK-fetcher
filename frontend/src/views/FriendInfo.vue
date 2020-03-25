@@ -37,7 +37,7 @@
         <div class="friends-with">
             <div class="title-container">
                 <div class="core-title">
-                    <span>Are friends with selected:</span>
+                    <span>Are friends with selected</span>
                 </div>
             </div>
             <div class="friends-list">
@@ -67,20 +67,41 @@
                 </div>
             </div>
         </div>
+        <div class="wall-container">
+            <div class="title-container">
+                <div class="core-title">
+                    <span>Wall</span>
+                </div>
+            </div>
+            <profile-wall v-if="wall && profile" :wall="wall" :profile="profile"></profile-wall>
+        </div>
+        <transition name="slide-right">
+            <div
+                    v-if="isPageBottom"
+                    class="more-button"
+                    :key="wallPosts"
+                    @click="showMorePosts">
+                <neon-button>Show More</neon-button>
+            </div>
+        </transition >
     </div>
 </template>
 
 <script>
     import axios from 'axios';
     import filtersMixin from '@/mixins/filtersMixin';
+    import ProfileWall from "@/components/ProfileWall";
     import { mapGetters } from 'vuex';
+    import NeonButton from "@/components/NeonButton";
 
     export default {
         name: "FriendInfo",
         data: () => ({
             profile: null,
             wall: null,
-            selectedFriends: []
+            wallPosts: 1,
+            selectedFriends: [],
+            isPageBottom: false
         }),
         computed: {
             ...mapGetters([
@@ -95,12 +116,11 @@
                 axios.get(`/profiles/profile-full/${this.$route.params.id}`)
                     .then(res => {
                         this.profile = res.data;
-                        console.log(this.profile)
                     });
-                axios.get(`/profiles/profile-wall/${ this.$route.params.id }`)
+                axios.get(`/profiles/profile-wall/${ this.$route.params.id }/0`)
                     .then(res => {
                         this.wall = res.data;
-                        // console.log(res.data);
+                        console.log(res.data);
                     })
                     .catch();
 
@@ -109,12 +129,46 @@
                     this.selectedFriends.push(this.selectedProfilesObj[mutualFr.id]);
                 })
 
+            },
+            onScroll() {
+                if (this.wall.count === this.wallPosts)
+                    return this.isPageBottom = false;
+
+                let bottomOfWindow =
+                    Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop)
+                    + window.innerHeight + 200 >= document.documentElement.offsetHeight;
+
+                this.isPageBottom = bottomOfWindow;
+            },
+            async showMorePosts(event) {
+                event.target.blur();
+
+                const post = await axios.get(`/profiles/profile-wall/${ this.$route.params.id }/${this.wallPosts}`)
+                    .then(res => {
+                        const wallCopy = Object.assign({}, this.wall);
+                        wallCopy.items.push(...res.data.items);
+                        this.wall = wallCopy;
+                        console.log(this.wall);
+                    })
+                    .catch(err => {
+                        console.log('Press one more');
+                    });
+                this.wallPosts++;
             }
         },
         created() {
             this.getPageInfo();
+            this.wallPosts = 1;
+            window.addEventListener('scroll', this.onScroll);
+        },
+        destroyed() {
+            window.removeEventListener('scroll', this.onScroll);
         },
         mixins: [filtersMixin],
+        components: {
+            ProfileWall,
+            NeonButton
+        }
     }
 </script>
 
@@ -138,7 +192,7 @@
                 .friend-picture {
                     margin-right: 50px;
                     img {
-                        max-height: 550px;
+                        /*max-height: 550px;*/
                         height: auto;
                         min-width: 400px;
                         width: 100%;
@@ -170,33 +224,40 @@
         .friends-with {
             .friends-list {
                 max-width: 800px;
-                margin: 0 auto;
+                margin: 0 auto 60px;
                 width: 100%;
                 display: flex;
                 flex-wrap: wrap;
-                justify-content: space-between;
+                justify-content: center;
+                padding-top: 40px;
 
                 .friend {
                     color: #FFFFFF;
-                    margin: 0 5px 20px 5px;
+                    margin: 0 15px 20px 15px;
                     padding: 10px;
                     text-align: center;
                     min-width: 200px;
                     background-color: #38495a;
                     border-radius: 20px;
-
+                    line-height: 1.5rem;
                     &__picture {
                         padding: 20px;
                         img {
                             border-radius: 50px;
                         }
                     }
-                    &__friends {
-                        padding-bottom: 10px;
+                    &__age {
+                        padding-bottom: 15px;
                     }
                 }
             }
         }
+
+    }
+    .more-button {
+        position: fixed;
+        left: 0;
+        bottom: 0;
     }
     .lds-ring {
         display: inline-block;

@@ -89,7 +89,9 @@
                 <div class="modal-error__text">
                     Type
                     <span>yarn start</span>
-                    in the new terminal window
+                    in a new terminal window.
+                    <br>
+                    Reload page after that.
                 </div>
             </div>
         </transition>

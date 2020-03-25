@@ -125,9 +125,16 @@
             window.removeEventListener('scroll', this.onScroll);
         },
         beforeRouteLeave(to, from, next) {
-            if (this.pages === 1) return next();
-            setTimeout(() => next(), this.pages * 250 + 400);
+            // wait for scroll animation end before routing
+            const scrollFromTop =
+                Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop);
 
+            if (scrollFromTop === 0) {
+                return next();
+            }
+            else {
+                setTimeout(() => next(), scrollFromTop * 250 / 2058 + 400);
+            }
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'

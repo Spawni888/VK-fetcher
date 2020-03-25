@@ -33,7 +33,7 @@ const wallQueryParams = {
     access_token: process.env.VK_ACCESS_TOKEN,
     owner_id: null,
     offset: 0,
-    count: 21,
+    count: 1,
     fields: [
         'id',
     ],
@@ -52,6 +52,16 @@ const fullProfileQueryParams = {
         'photo_200',
         'photo_400_orig',
         'domain',
+    ],
+    v: 5.52
+};
+
+const groupQueryParams = {
+    access_token: process.env.VK_ACCESS_TOKEN,
+    group_id: null,
+    offset: 0,
+    fields: [
+
     ],
     v: 5.52
 };
@@ -97,6 +107,8 @@ async function getFriends(ctx) {
 
 async function getProfileWall(ctx) {
     wallQueryParams.owner_id = ctx.params.id;
+    wallQueryParams.offset = ctx.params.offset;
+
     const wallQueryStr = querystring.stringify(wallQueryParams);
     const wall = await axios.get(`https://api.vk.com/method/wall.get?${wallQueryStr}`);
     const wallResponse = wall.data.response;
@@ -110,6 +122,7 @@ async function getProfileWall(ctx) {
 
 async function getFullProfileInfo(ctx) {
     fullProfileQueryParams.user_ids = ctx.params.id;
+
     const userQueryStr = querystring.stringify(fullProfileQueryParams);
     const user = await axios.get(`https://api.vk.com/method/users.get?${userQueryStr}`);
     const {response, error} = user.data;
@@ -117,6 +130,21 @@ async function getFullProfileInfo(ctx) {
     if (error ||response[0].deactivated) {
         ctx.throw(422, error && error.error_msg || response[0].deactivated);
     }
+
+    ctx.body = response[0];
+}
+
+async function getGroup(ctx) {
+    groupQueryParams.group_id = ctx.params.id;
+
+    const groupQueryStr = querystring.stringify(groupQueryParams);
+    const group = await axios.get(`https://api.vk.com/method/groups.getById?${ groupQueryStr }`);
+    const {response, error} = group.data;
+    //TODO: make error handle
+
+    // if (error) {
+    //
+    // }
     ctx.body = response[0];
 }
 
@@ -124,5 +152,6 @@ module.exports = {
     getProfile,
     getFriends,
     getProfileWall,
-    getFullProfileInfo
+    getFullProfileInfo,
+    getGroup
 };
