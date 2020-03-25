@@ -70,7 +70,9 @@
         <div class="wall-container">
             <div class="title-container">
                 <div class="core-title">
-                    <span>{{ wall === null ? 'Wall is hidden, sorry' : 'Wall' }}</span>
+                    <span>
+                        {{ (wall === null || !wall.items.length)? 'Wall is hidden or empty' : 'Wall' }}
+                    </span>
                 </div>
             </div>
             <profile-wall v-if="wall && profile" :wall="wall" :profile="profile"></profile-wall>
@@ -134,7 +136,7 @@
 
             },
             onScroll() {
-                if (this.wall.count === this.wallPosts)
+                if (this.wall.count === this.wallPosts || !this.wall.items.length)
                     return this.isPageBottom = false;
 
                 let bottomOfWindow =
