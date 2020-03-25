@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const path = require('path');
 const Koa = require('koa');
-const logger = require('koa-logger');
+// const logger = require('koa-logger');
 const bodyParser = require('koa-bodyparser');
 const send = require('koa-send');
 const serve = require('koa-static');
@@ -10,10 +10,9 @@ const config = require('./config/config');
 
 const app = new Koa();
 const router = require('./routes/routes');
-// app.use(async ctx => ctx.body = {msg: 'Hello World'});
 
 app
-    .use(logger())
+    // .use(logger())
     .use(serve(path.join(__dirname, '..', 'dist')))
     .use(bodyParser());
 
