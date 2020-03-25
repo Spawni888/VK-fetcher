@@ -13,6 +13,13 @@ yarn serve
 ```
 yarn start
 ```
+##ENV VARIABLES
+```
+You can set your own application ports in .env file.
+
+    APP_SERVER - back port;
+    PORT       - front port;
+```
 
 # Task:
 ```

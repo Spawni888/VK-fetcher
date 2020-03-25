@@ -110,7 +110,6 @@ async function getProfileWall(ctx) {
     wallQueryParams.offset = ctx.params.offset;
 
     const wallQueryStr = querystring.stringify(wallQueryParams);
-    console.log(`https://api.vk.com/method/wall.get?${wallQueryStr}`);
     const wall = await axios.get(`https://api.vk.com/method/wall.get?${wallQueryStr}`);
     const { response, error } = wall.data;
 
