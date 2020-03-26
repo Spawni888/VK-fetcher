@@ -21,17 +21,23 @@
                     </a>
                 </div>
             </transition>
-            <transition
-                name="fade-in"
-                mode="out-in"
-            >
-                <div class="profile-info__other">
+
+            <div class="profile-info__other">
+                <transition
+                    name="fade-in"
+                    mode="out-in"
+                >
                     <div
                         :key="profileCopy.first_name + profileCopy.last_name"
                         class="profile-info__name"
                     >
                         {{ profileCopy.first_name }} {{ profileCopy.last_name }}
                     </div>
+                </transition>
+                <transition
+                    name="fade-in"
+                    mode="out-in"
+                >
                     <div
                         :key="`https://vk.com/wall${profile.id}_${postCopy.id}`"
                         class="profile-info__date"
@@ -43,8 +49,8 @@
                             {{ defineDate(postCopy.date) }}
                         </a>
                     </div>
-                </div>
-            </transition>
+                </transition>
+            </div>
             <attachments
                 :profile="profile"
                 :post-copy="postCopy"
