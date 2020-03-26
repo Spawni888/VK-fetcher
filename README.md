@@ -14,7 +14,8 @@ yarn build
 yarn start
 ```
 ##ENV VARIABLES
-####You can set your own back-server port in .env file.
+
+###You can set your own back-server port in .env file.
 ```
     PORT            - back-server port;
     FRONT_PORT      - vue-cli-service port;
