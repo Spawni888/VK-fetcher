@@ -3,7 +3,7 @@
         name="fade-in"
         mode="out-in"
     >
-        <div class="wall-post">
+        <div :key="profileCopy.photo_400_orig || profileCopy.photo_200_orig || profileCopy.photo_200" class="wall-post">
             <div class="profile-info">
                 <div class="profile-info__picture">
                     <a
