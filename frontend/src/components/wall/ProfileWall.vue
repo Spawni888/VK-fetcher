@@ -38,10 +38,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    @import "@/assets/scss/main";
+
     .wall {
         max-width: 600px;
         width: 100%;
         margin: 20px auto 40px;
+        @media (max-width: $smDesktopWidth) {
+           max-width: 570px;
+        }
+        @media (max-width: $tableWidth) {
+            max-width: 400px;
+        }
+
         &__post {
             margin-bottom: 40px;
         }

@@ -23,6 +23,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+    @import "@/assets/scss/main";
+
     a{
         color: #03E9F4;
         display: inline-block;
@@ -36,7 +38,15 @@ export default {
         text-transform: uppercase;
         transition: 0.5s;
         -webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
-
+        @media (max-width: $smDesktopWidth) {
+            font-size: 10px;
+            padding: 22px 16px;
+        }
+        @media (max-width: $tableWidth) {
+            font-size: 8px;
+            padding: 16px 12px;
+            margin: 10px 20px;
+        }
     }
 
     a{

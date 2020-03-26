@@ -165,8 +165,10 @@ export default {
                 });
 
             // create selected friends array
-            if (!this.getMutualFriends(this.$route.params.id).length) return;
-            this.getMutualFriends(this.$route.params.id).forEach((mutualFr) => {
+            const mutualFriends = this.getMutualFriends(this.$route.params.id);
+
+            if (mutualFriends === undefined || !mutualFriends.length) return;
+            mutualFriends.forEach((mutualFr) => {
                 this.selectedFriends.push(this.selectedProfilesObj[mutualFr.id]);
             });
         },
@@ -199,6 +201,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    @import "@/assets/scss/main";
+
     .friend-info-container {
         width: 80%;
         margin: 0 auto;
@@ -211,6 +215,9 @@ export default {
             justify-content: center;
             text-align: center;
             min-height: 550px;
+            @media (max-width: $tableWidth) {
+                min-height: 400px;
+            }
 
             .friend-picture-container {
                 display: flex;
@@ -223,6 +230,9 @@ export default {
                         min-width: 400px;
                         width: 100%;
                         border-radius: 20px;
+                        @media (max-width: $tableWidth) {
+                            min-height: 300px;
+                        }
                     }
                 }
             }
@@ -234,7 +244,9 @@ export default {
                 flex-wrap: wrap;
                 color: #FFFFFF;
                 font-size: 60px;
-
+                @media (max-width: $tableWidth) {
+                    font-size: 40px
+                }
                 >* {
                     display: flex;
                     flex-wrap: wrap;
@@ -244,6 +256,9 @@ export default {
                 }
                 span {
                     font-size: 30px;
+                    @media (max-width: $tableWidth) {
+                        font-size: 18px;
+                    }
                 }
             }
         }

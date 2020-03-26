@@ -144,6 +144,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+    @import "@/assets/scss/main";
+
     .friends-list {
         max-width: 800px;
         margin: 0 auto;
@@ -151,6 +153,13 @@ export default {
         display: flex;
         justify-content: space-evenly;
         flex-wrap: wrap;
+        @media (max-width: $smDesktopWidth) {
+            max-width: 680px;
+        }
+        @media (max-width: $tableWidth) {
+            max-width: 400px;
+            font-size: 14px;
+        }
 
         .friend {
             color: #FFFFFF;
@@ -161,6 +170,12 @@ export default {
             background-color: #38495a;
             border-radius: 20px;
             cursor: pointer;
+            @media (max-width: $smDesktopWidth) {
+                min-width: 180px;
+            }
+            @media (max-width: $tableWidth) {
+                min-width: 140px;
+            }
             &:hover {
                 background-color: #556b7c;
             }

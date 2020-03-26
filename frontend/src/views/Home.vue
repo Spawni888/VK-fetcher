@@ -201,6 +201,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+    @import "@/assets/scss/main";
+
     .home {
         width: 80%;
         margin: 0 auto;
@@ -228,6 +230,9 @@ export default {
                     font-size: 30px;
                     margin-bottom: 40px;
                     text-align: center;
+                    @media (max-width: $tableWidth) {
+                        font-size: 20px;
+                    }
 
                     &:focus::-webkit-input-placeholder {
                         opacity: 0.5;
@@ -372,11 +377,17 @@ export default {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-around;
-
+            @media (max-width: $tableWidth) {
+                max-width: 68%;
+                width: 100%;
+            }
             &__item {
                 margin: 0 20px 30px 20px;
                 position: relative;
                 cursor: pointer;
+                @media (max-width: $tableWidth) {
+                    margin: 0 10px 20px 10px;
+                }
 
                 &:hover {
                     .profile-hover {
@@ -394,6 +405,10 @@ export default {
                         border-radius: 50px;
                         width: 100px;
                         height: 100px;
+                        @media (max-width: $tableWidth) {
+                            width: 70px;
+                            height: 70px;
+                        }
                     }
 
                     &__name {
@@ -409,6 +424,10 @@ export default {
             }
             &__picture {
                 img {
+                    @media (max-width: $tableWidth) {
+                        width: 70px;
+                        height: 70px;
+                    }
                     border-radius: 50px;
                 }
             }

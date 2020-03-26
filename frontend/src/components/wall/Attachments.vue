@@ -166,6 +166,8 @@ export default {
         flex: 1 1 100%;
         display: flex;
         flex-wrap: wrap;
+        max-width: 100%;
+
         >* {
             flex: 1 1 100%;
             margin-bottom: 10px;
@@ -175,6 +177,7 @@ export default {
             line-height: 1.3rem;
             margin-top: 15px;
             flex: 1 1 100%;
+            max-width: 100%;
 
             a,
             a:active,
