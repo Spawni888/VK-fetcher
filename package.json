@@ -6,7 +6,7 @@
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
         "start": "nodemon ./backend/app.js",
-        "lint": "eslint ./"
+        "lint": "./node_modules/.bin/eslint.cmd ./ --fix --ext .js,.vue"
     },
     "dependencies": {
         "axios": "^0.19.2",
@@ -33,7 +33,7 @@
         "eslint": "^6.8.0",
         "eslint-config-airbnb-base": "^14.1.0",
         "eslint-plugin-import": "^2.20.1",
-        "eslint-plugin-vue": "^6.2.2",
+        "eslint-plugin-vue": "^7.0.0-alpha.0",
         "html-webpack-plugin": "^3.2.0",
         "koa-logger": "^3.2.1",
         "node-sass": "^4.12.0",

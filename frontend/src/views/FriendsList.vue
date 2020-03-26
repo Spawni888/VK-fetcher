@@ -1,18 +1,23 @@
 <template>
-    <div class="friends-container" >
+    <div class="friends-container">
         <div class="friends-list">
             <transition-group
-                    name="slide-right"
-                    tag="div"
-                    style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                name="slide-right"
+                tag="div"
+                style="display: flex; justify-content: space-between; flex-wrap: wrap;"
+            >
                 <div
-                        v-for="friend in paginatedFriends"
-                        :key="friend.id"
-                        class="friend"
-                        :style="{border: `5px solid hsl(210, 23%, ${computeBrightness(friend)}%)`}"
-                        @click="openInfo(friend)">
+                    v-for="friend in paginatedFriends()"
+                    :key="friend.id"
+                    class="friend"
+                    :style="{border: `5px solid hsl(210, 23%, ${computeBrightness(friend)}%)`}"
+                    @click="openInfo(friend)"
+                >
                     <div class="friend__picture">
-                        <img :src="friend.photo_100" alt="profile-img">
+                        <img
+                            :src="friend.photo_100"
+                            alt="profile-img"
+                        >
                     </div>
                     <div class="friend__fname">
                         First name:
@@ -24,18 +29,26 @@
                     </div>
                     <div class="friend__sex">
                         Sex:
-                        {{ friend.sex | defineSex}}
+                        {{ defineSex(friend.sex) }}
                     </div>
                     <div class="friend__age">
                         Age:
-                        {{ friend.bdate | defineAge }}
+                        {{ defineAge(friend.bdate) }}
                     </div>
                     <div class="friend__friends">
-                        <transition mode="out-in" name="fade-in">
+                        <transition
+                            mode="out-in"
+                            name="fade-in"
+                        >
                             <span v-if="friend.friendsCount !== undefined">
                                 Friends count: {{ friend.friendsCount }}
                             </span>
-                            <div v-else class="lds-ring"><div></div><div></div><div></div><div></div></div>
+                            <div
+                                v-else
+                                class="lds-ring"
+                            >
+                                <div /><div /><div /><div />
+                            </div>
                         </transition>
                     </div>
                 </div>
@@ -43,91 +56,91 @@
         </div>
         <transition name="slide-right">
             <div
-                    v-if="isPageBottom"
-                    class="more-button"
-                    :key="pages"
-                    @click="increasePages">
+                v-if="isPageBottom"
+                :key="pages"
+                class="more-button"
+                @click="increasePages"
+            >
                 <neon-button>Show More</neon-button>
             </div>
-        </transition >
+        </transition>
     </div>
 </template>
 
 <script>
-    import { mapGetters, mapActions } from 'vuex';
-    import NeonButton from "@/components/NeonButton";
-    import filtersMixin from '@/mixins/filtersMixin';
+import { mapGetters, mapActions } from 'vuex';
+import NeonButton from '@/components/NeonButton';
+import methodsMixin from '@/mixins/methodsMixin';
 
-    export default {
-        name: "FriendsList",
-        data: () => ({
-            pages: 1,
-            isPageBottom: false
-        }),
-        methods: {
-            ...mapActions([
-               'getFriendsCount'
-            ]),
-            increasePages() {
+export default {
+    name: 'FriendsList',
+    components: {
+        NeonButton,
+    },
+    mixins: [methodsMixin],
+    data: () => ({
+        pages: 1,
+        isPageBottom: false,
+    }),
+    computed: {
+        ...mapGetters([
+            'profilesFriends',
+            'getMutualFriends',
+            'selectedValuesArray',
+        ]),
+    },
+    mounted() {
+        this.pages = 1;
+        window.addEventListener('scroll', this.onScroll);
+    },
+    destroyed() {
+        window.removeEventListener('scroll', this.onScroll);
+    },
+    methods: {
+        ...mapActions([
+            'getFriendsCount',
+        ]),
+        paginatedFriends() {
+            const end = this.pages * 21;
+            if (end > this.profilesFriends.length - 1) {
+                window.removeEventListener('scroll', this.onScroll);
                 this.isPageBottom = false;
-                let start = 21 * this.pages;
-
-                let end = start + 21;
-                if (end > this.profilesFriends.length) {
-
-                    end = this.profilesFriends.length;
-                }
-                this.getFriendsCount({start, end});
-                this.pages++;
-            },
-            onScroll() {
-                let bottomOfWindow =
-                    Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop)
-                    + window.innerHeight + 800 >= document.documentElement.offsetHeight;
-
-                this.isPageBottom = bottomOfWindow;
-            },
-            computeBrightness({ id }) {
-                const mutualFriendsCount = this.getMutualFriends(id).length;
-                let panelLight = mutualFriendsCount * 15 + 20;
-
-                if (panelLight > 100) {
-                    return 100;
-                }
-                return panelLight;
-            },
-            openInfo({ id }) {
-                this.$router.push({name: 'FriendInfo', params: { id }})
+                return this.profilesFriends;
             }
+            return this.profilesFriends.slice(0, end);
         },
-        computed: {
-            ...mapGetters([
-                'profilesFriends',
-                'getMutualFriends',
-                'selectedValuesArray'
-            ]),
-            paginatedFriends() {
-                let end = this.pages * 21;
-                if (end > this.profilesFriends.length - 1) {
-                    window.removeEventListener('scroll', this.onScroll);
-                    this.isPageBottom = false;
-                    return this.profilesFriends;
-                }
-                return this.profilesFriends.slice(0, end);
+        increasePages() {
+            this.isPageBottom = false;
+            const start = 21 * this.pages;
+
+            let end = start + 21;
+            if (end > this.profilesFriends.length) {
+                end = this.profilesFriends.length;
             }
+            this.getFriendsCount({ start, end });
+            this.pages++;
         },
-        mixins: [filtersMixin],
-        mounted() {
-            this.pages = 1;
-            window.addEventListener('scroll', this.onScroll);
+        onScroll() {
+            const bottomOfWindow = Math.max(
+                window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop,
+            ) + window.innerHeight + 800 >= document.documentElement.offsetHeight;
+
+            this.isPageBottom = bottomOfWindow;
         },
-        destroyed() {
-            window.removeEventListener('scroll', this.onScroll);
+        computeBrightness({ id }) {
+            const mutualFriendsCount = this.getMutualFriends(id).length;
+            const panelLight = mutualFriendsCount * 15 + 20;
+
+            if (panelLight > 100) {
+                return 100;
+            }
+            return panelLight;
         },
-        components: {
-            NeonButton
-        }
-    }
+        openInfo({ id }) {
+            this.$router.push({ name: 'FriendInfo', params: { id } });
+        },
+    },
+};
 </script>
 
 <style scoped lang="scss">

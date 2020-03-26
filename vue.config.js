@@ -48,7 +48,7 @@ module.exports = {
                     target: `http://localhost:${backendCfg.app.port}`,
                 },
             },
-            port: process.env.PORT || 8080,
+            port: process.env.FRONT_PORT || 8080,
         };
     },
 };

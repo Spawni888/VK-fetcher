@@ -1,10 +1,20 @@
 <template>
     <div class="friend-info-container">
-        <transition name="fade-in" mode="out-in">
-            <div v-if="profile" class="friend-info" :key="profile.id">
+        <transition
+            name="fade-in"
+            mode="out-in"
+        >
+            <div
+                v-if="profile"
+                :key="profile.id"
+                class="friend-info"
+            >
                 <div class="friend-picture-container">
                     <div class="friend-picture">
-                        <img :src="profile.photo_400_orig || profile.photo_200_orig || profile.photo_200" alt="photo">
+                        <img
+                            :src="profile.photo_400_orig || profile.photo_200_orig || profile.photo_200"
+                            alt="photo"
+                        >
                     </div>
                 </div>
                 <div class="friend-about">
@@ -18,19 +28,23 @@
                     </div>
                     <div class="friend-about__sex">
                         <span>Sex:</span>
-                        <div>{{ profile.sex | defineSex}}</div>
+                        <div>{{ defineSex(profile.sex) }}</div>
                     </div>
                     <div class="friend-about__age">
                         <span>Age:</span>
-                        <div>{{ profile.bdate | defineAge }}</div>
+                        <div>{{ defineAge(profile.bdate) }}</div>
                     </div>
                 </div>
             </div>
-            <div v-else class="loader-container" key="loader">
+            <div
+                v-else
+                key="loader"
+                class="loader-container"
+            >
                 <div class="loader">
-                    <div class="inner one"></div>
-                    <div class="inner two"></div>
-                    <div class="inner three"></div>
+                    <div class="inner one" />
+                    <div class="inner two" />
+                    <div class="inner three" />
                 </div>
             </div>
         </transition>
@@ -42,11 +56,15 @@
             </div>
             <div class="friends-list">
                 <div
-                        v-for="friend in selectedFriends"
-                        :key="friend.id"
-                        class="friend">
+                    v-for="friend in selectedFriends"
+                    :key="friend.id"
+                    class="friend"
+                >
                     <div class="friend__picture">
-                        <img :src="friend.photo_100" alt="profile-img">
+                        <img
+                            :src="friend.photo_100"
+                            alt="profile-img"
+                        >
                     </div>
                     <div class="friend__fname">
                         First name:
@@ -58,11 +76,11 @@
                     </div>
                     <div class="friend__sex">
                         Sex:
-                        {{ friend.sex | defineSex}}
+                        {{ defineSex(friend.sex) }}
                     </div>
                     <div class="friend__age">
                         Age:
-                        {{ friend.bdate | defineAge }}
+                        {{ defineAge(friend.bdate) }}
                     </div>
                 </div>
             </div>
@@ -75,105 +93,109 @@
                     </span>
                 </div>
             </div>
-            <profile-wall v-if="wall && profile" :wall="wall" :profile="profile"></profile-wall>
+            <profile-wall
+                v-if="wall && profile"
+                :wall="wall"
+                :profile="profile"
+            />
         </div>
 
         <transition name="slide-right">
             <div
-                    v-if="isPageBottom"
-                    class="more-button"
-                    :key="wallPosts"
-                    @click="showMorePosts">
+                v-if="isPageBottom"
+                :key="wallPosts"
+                class="more-button"
+                @click="showMorePosts"
+            >
                 <neon-button>Show More</neon-button>
             </div>
-        </transition >
+        </transition>
     </div>
 </template>
 
 <script>
-    import axios from 'axios';
-    import filtersMixin from '@/mixins/filtersMixin';
-    import ProfileWall from "@/components/wall/ProfileWall";
-    import { mapGetters } from 'vuex';
-    import NeonButton from "@/components/NeonButton";
+import axios from 'axios';
+import methodsMixin from '@/mixins/methodsMixin';
+import ProfileWall from '@/components/wall/ProfileWall';
+import { mapGetters } from 'vuex';
+import NeonButton from '@/components/NeonButton';
 
-    export default {
-        name: "FriendInfo",
-        data: () => ({
-            profile: null,
-            wall: null,
-            wallPosts: 1,
-            selectedFriends: [],
-            isPageBottom: false
-        }),
-        computed: {
-            ...mapGetters([
-                'selectedProfilesObj',
-                'getMutualFriends'
-            ])
-        },
-        methods: {
-            getPageInfo() {
-                this.selectedFriends = [];
+export default {
+    name: 'FriendInfo',
+    components: {
+        ProfileWall,
+        NeonButton,
+    },
+    mixins: [methodsMixin],
+    data: () => ({
+        profile: null,
+        wall: null,
+        wallPosts: 1,
+        selectedFriends: [],
+        isPageBottom: false,
+    }),
+    computed: {
+        ...mapGetters([
+            'selectedProfilesObj',
+            'getMutualFriends',
+        ]),
+    },
+    created() {
+        this.getPageInfo();
+        this.wallPosts = 1;
+    },
+    destroyed() {
+        window.removeEventListener('scroll', this.onScroll);
+    },
+    methods: {
+        getPageInfo() {
+            this.selectedFriends = [];
 
-                axios.get(`/profiles/profile-full/${this.$route.params.id}`)
-                    .then(res => {
-                        this.profile = res.data;
-                    });
-                axios.get(`/profiles/profile-wall/${ this.$route.params.id }/0`)
-                    .then(res => {
-                        this.wall = res.data;
-                        window.addEventListener('scroll', this.onScroll.bind(this));
-                    })
-                    .catch(err => {
-                        this.wall = null;
-                    });
-
-                //create selected friends array
-                this.getMutualFriends(this.$route.params.id).forEach(mutualFr => {
-                    this.selectedFriends.push(this.selectedProfilesObj[mutualFr.id]);
+            axios.get(`/profiles/profile-full/${this.$route.params.id}`)
+                .then((res) => {
+                    this.profile = res.data;
+                });
+            axios.get(`/profiles/profile-wall/${this.$route.params.id}/0`)
+                .then((res) => {
+                    this.wall = res.data;
+                    window.addEventListener('scroll', this.onScroll.bind(this));
                 })
+                .catch(() => {
+                    this.wall = null;
+                });
 
-            },
-            onScroll() {
-                if (this.wall.count === this.wallPosts || !this.wall.items.length)
-                    return this.isPageBottom = false;
-
-                let bottomOfWindow =
-                    Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop)
-                    + window.innerHeight + 200 >= document.documentElement.offsetHeight;
-
-                this.isPageBottom = bottomOfWindow;
-            },
-            async showMorePosts(event) {
-                event.target.blur();
-                this.isPageBottom = false;
-
-                const post = await axios.get(`/profiles/profile-wall/${ this.$route.params.id }/${this.wallPosts}`)
-                    .then(res => {
-                        const wallCopy = Object.assign({}, this.wall);
-                        wallCopy.items.push(...res.data.items);
-                        this.wall = wallCopy;
-                    })
-                    .catch(err => {
-                        this.showMorePosts.call(this);
-                    });
-                this.wallPosts++;
-            }
+            // create selected friends array
+            if (!this.getMutualFriends(this.$route.params.id).length) return;
+            this.getMutualFriends(this.$route.params.id).forEach((mutualFr) => {
+                this.selectedFriends.push(this.selectedProfilesObj[mutualFr.id]);
+            });
         },
-        created() {
-            this.getPageInfo();
-            this.wallPosts = 1;
+        onScroll() {
+            if (this.wall.count === this.wallPosts || !this.wall.items.length) { return this.isPageBottom = false; }
+
+            const bottomOfWindow = Math.max(
+                window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop,
+            ) + window.innerHeight + 200 >= document.documentElement.offsetHeight;
+
+            this.isPageBottom = bottomOfWindow;
         },
-        destroyed() {
-            window.removeEventListener('scroll', this.onScroll);
+        async showMorePosts(event) {
+            event.target.blur();
+            this.isPageBottom = false;
+
+            await axios.get(`/profiles/profile-wall/${this.$route.params.id}/${this.wallPosts}`)
+                .then((res) => {
+                    const wallCopy = { ...this.wall };
+                    wallCopy.items.push(...res.data.items);
+                    this.wall = wallCopy;
+                })
+                .catch(() => {
+                    this.showMorePosts.call(this);
+                });
+            this.wallPosts++;
         },
-        mixins: [filtersMixin],
-        components: {
-            ProfileWall,
-            NeonButton
-        }
-    }
+    },
+};
 </script>
 
 <style lang="scss" scoped>

@@ -5,20 +5,20 @@
 yarn install
 ```
 ## Project start
-#### Start front
+#### build project
 ```
-yarn serve
+yarn build
 ```
-#### Start back
+#### Start back-server
 ```
 yarn start
 ```
 ##ENV VARIABLES
+####You can set your own back-server port in .env file.
 ```
-You can set your own application ports in .env file.
-
-    APP_SERVER - back port;
-    PORT       - front port;
+    PORT            - back-server port;
+    FRONT_PORT      - vue-cli-service port;
+    VK_ACCESS_TOKEN - access token of your vk application.(not recommended to change)
 ```
 
 # Task:

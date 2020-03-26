@@ -1,5 +1,5 @@
 export default {
-    filters: {
+    methods: {
         defineSex(value) {
             switch (value) {
             case 2:

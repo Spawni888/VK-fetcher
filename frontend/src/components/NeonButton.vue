@@ -1,18 +1,25 @@
 <template>
-    <router-link tag="a" :to="route ? route : $route">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <slot/>
+    <router-link
+        tag="a"
+        :to="route ? route : $route"
+    >
+        <span />
+        <span />
+        <span />
+        <span />
+        <slot />
     </router-link>
 </template>
 
 <script>
-    export default {
-        name: "NeonButton",
-        props: ['route']
-    }
+export default {
+    name: 'NeonButton',
+    props: {
+        route: {
+            type: Object,
+        },
+    },
+};
 </script>
 
 <style scoped lang="scss">

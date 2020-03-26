@@ -2,14 +2,29 @@
     <div class="home">
         <div class="home-input">
             <div class="input-container">
-                <input type="text" v-model="id" @input="getProfileInfo" placeholder="PLACE VK-ID HERE">
+                <input
+                    v-model="id"
+                    type="text"
+                    placeholder="PLACE VK-ID HERE"
+                    @input="getProfileInfo"
+                >
             </div>
 
             <div class="lazy-profile">
-                <transition mode="out-in" name="fade-in">
-                    <div v-if="lazyProfile === 'not-found'" class="profile-inner" :key="notFoundId">
+                <transition
+                    mode="out-in"
+                    name="fade-in"
+                >
+                    <div
+                        v-if="lazyProfile === 'not-found'"
+                        :key="notFoundId"
+                        class="profile-inner"
+                    >
                         <div class="profile-picture">
-                            <img src="@/assets/img/404.jpg" alt="profile-img">
+                            <img
+                                src="@/assets/img/404.jpg"
+                                alt="profile-img"
+                            >
                         </div>
                         <div class="profile-inner__text">
                             Profile with id:
@@ -18,20 +33,23 @@
                             <br>
                             Not found.
                             <br>
-                            Try one another, boy.
+                            Try a different one.
                         </div>
                     </div>
                     <div
-                            v-else-if="lazyProfile"
-                            :key="lazyProfile.id"
-                            class="profile-inner profile-inner_hover"
-                            @click="selectProfile">
-
+                        v-else-if="lazyProfile"
+                        :key="lazyProfile.id"
+                        class="profile-inner profile-inner_hover"
+                        @click="selectProfile"
+                    >
                         <div class="profile-picture">
-                            <img :src="lazyProfile.photo_100" alt="profile-img">
+                            <img
+                                :src="lazyProfile.photo_100"
+                                alt="profile-img"
+                            >
                         </div>
                         <div class="lazy-profile__fname">
-                             First name:
+                            First name:
                             {{ lazyProfile.first_name }}
                         </div>
                         <div class="lazy-profile__lname">
@@ -40,49 +58,69 @@
                         </div>
                         <div class="lazy-profile__sex">
                             Sex:
-                            {{ lazyProfile.sex | defineSex}}
+                            {{ defineSex(lazyProfile.sex) }}
                         </div>
                         <div class="lazy-profile__age">
                             Age:
-                            {{ lazyProfile.bdate | defineAge }}
+                            {{ defineAge(lazyProfile.bdate) }}
                         </div>
                         <div class="lazy-profile__friends">
                             Friends count:
                             {{ lazyProfile.friends.count }}
                         </div>
                     </div>
-                    <div v-else class="lazy-profile__loader" key="loader">
-                        <div class="inner one"></div>
-                        <div class="inner two"></div>
-                        <div class="inner three"></div>
+                    <div
+                        v-else
+                        key="loader"
+                        class="lazy-profile__loader"
+                    >
+                        <div class="inner one" />
+                        <div class="inner two" />
+                        <div class="inner three" />
                     </div>
                 </transition>
             </div>
         </div>
-        <transition name="fade-in" mode="out-in">
-            <div v-if="selectedValuesArray.length" class="selected-profiles" :key="selectedValuesArray.length">
+        <transition
+            name="fade-in"
+            mode="out-in"
+        >
+            <div
+                v-if="selectedValuesArray.length"
+                :key="selectedValuesArray.length"
+                class="selected-profiles"
+            >
                 <div
-                        v-for="item in selectedValuesArray"
-                        class="selected-profiles__item"
-                        @click="unselectProfile(item)">
-
+                    v-for="item in selectedValuesArray"
+                    :key="item.id"
+                    class="selected-profiles__item"
+                    @click="unselectProfile(item)"
+                >
                     <div class="selected-profiles__picture">
-                        <img :src="item.photo_100" :key="item.id" alt="selected-img">
+                        <img
+                            :src="item.photo_100"
+                            alt="selected-img"
+                        >
                     </div>
                     <div class="profile-hover">
                         <div class="profile-hover__picture">
-                            <img src="@/assets/img/cross.png" alt="cross">
+                            <img
+                                src="@/assets/img/cross.png"
+                                alt="cross"
+                            >
                         </div>
                         <div class="profile-hover__name">
                             {{ item.first_name }} {{ item.last_name }}
                         </div>
                     </div>
-
                 </div>
             </div>
         </transition>
         <transition name="fade-in">
-            <div v-if="showErrorModal" class="modal-error">
+            <div
+                v-if="showErrorModal"
+                class="modal-error"
+            >
                 <div class="modal-error__title">
                     Please start app server
                 </div>
@@ -97,70 +135,69 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    import debounce from 'lodash/debounce';
-    import  { mapGetters, mapMutations} from 'vuex';
-    import filtersMixin from "@/mixins/filtersMixin";
+import axios from 'axios';
+import debounce from 'lodash/debounce';
+import { mapGetters, mapMutations } from 'vuex';
+import methodsMixin from '@/mixins/methodsMixin';
 
-    export default {
-        name: 'Home',
-        data: () => ({
-            id: '',
-            lazyProfile: null,
-            notFoundId: null,
-            showErrorModal: false
-        }),
-        methods: {
-            ...mapMutations([
-                'select',
-                'unselect',
-                'createFriendsMap',
-                'clearFriendsMap'
-            ]),
-            getProfileInfo: debounce(function () {
-                if (!this.id || this.isSelected({id: this.id})) {
-                    return this.lazyProfile = null;
-                }
+export default {
+    name: 'Home',
+    mixins: [methodsMixin],
+    data: () => ({
+        id: '',
+        lazyProfile: null,
+        notFoundId: null,
+        showErrorModal: false,
+    }),
+    computed: {
+        ...mapGetters([
+            'isSelected',
+            'selectedValuesArray',
+        ]),
+    },
+    methods: {
+        ...mapMutations([
+            'select',
+            'unselect',
+            'createFriendsMap',
+            'clearFriendsMap',
+        ]),
+        getProfileInfo: debounce(function () {
+            if (!this.id || this.isSelected({ id: this.id })) {
+                return this.lazyProfile = null;
+            }
 
-                axios.get(`/profiles/profile-and-friends/${ this.id }`)
-                    .then(res => {
-                        this.lazyProfile = res.data;
-                    })
-                    .catch(err => {
-                        if (err.response.status === 500) {
-                            return this.showErrorModal = true;
-                        }
-                        this.lazyProfile = 'not-found';
-                        this.notFoundId = this.id;
-                    });
-            }, 500),
-            selectProfile() {
-                if (this.isSelected(this.lazyProfile)) {
+            axios.get(`/profiles/profile-and-friends/${this.id}`)
+                .then((res) => {
+                    this.lazyProfile = res.data;
+                })
+                .catch((err) => {
+                    if (err.response.status === 500) {
+                        return this.showErrorModal = true;
+                    }
+                    this.lazyProfile = 'not-found';
                     this.notFoundId = this.id;
-                    return this.lazyProfile = 'already-selected';
-                }
-                this.select(this.lazyProfile);
-                this.createFriendsMap(this.lazyProfile);
+                });
+        }, 500),
+        selectProfile() {
+            if (this.isSelected(this.lazyProfile)) {
+                this.notFoundId = this.id;
+                return this.lazyProfile = 'already-selected';
+            }
+            this.select(this.lazyProfile);
+            this.createFriendsMap(this.lazyProfile);
+            this.lazyProfile = null;
+        },
+        unselectProfile(profile) {
+            this.unselect(profile);
+            this.clearFriendsMap(profile);
 
-                this.lazyProfile = null;
-            },
-            unselectProfile(profile) {
-                this.unselect(profile);
-                this.clearFriendsMap(profile);
-
-                if (parseInt(this.id) === profile.id || String(this.id) === String(profile.domain)) {
-                    this.getProfileInfo();
-                }
+            if (parseInt(this.id) === profile.id || String(this.id) === String(profile.domain)) {
+                this.getProfileInfo();
             }
         },
-        computed: {
-            ...mapGetters([
-                'isSelected',
-                'selectedValuesArray'
-            ]),
-        },
-        mixins: [filtersMixin]
-    }
+    },
+};
 </script>
 
 <style scoped lang="scss">

@@ -4,12 +4,15 @@
         "es6": true,
         "node": true
     },
+    "plugins": ["vue"],
+    "parser": "vue-eslint-parser",
     "parserOptions": {
-        "parser": "babel-eslint"
+        "parser": "babel-eslint",
+        "sourceType": "module"
     },
     "extends": [
         "airbnb-base",
-        "plugin:vue/recommended"
+        "plugin:vue/vue3-recommended"
     ],
     "rules": {
         "no-console": "off",
@@ -24,6 +27,16 @@
         "no-param-reassign": "off",
         "max-len": ["error", { "code": 120 }],
         "no-plusplus": "off",
-        "no-continue": "off"
+        "no-continue": "off",
+        "vue/require-v-for-key": "off",
+        "func-names": "off",
+        "radix": "off",
+        "vue/no-use-v-if-with-v-for": "off",
+        "vue/require-default-prop": "off",
+        "vue/no-v-html": "off",
+        "no-restricted-syntax": "off",
+        "camelcase": "off",
+        "vue/html-indent": ["error", 4],
+        "vue/component-tags-order": "off"
     }
 }

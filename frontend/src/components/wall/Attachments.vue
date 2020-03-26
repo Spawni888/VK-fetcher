@@ -1,68 +1,101 @@
 <template>
     <div class="attachments">
-        <div v-if="input.attachments && attachsAreTypeOf(input.attachments, 'doc')" class="attachments-photo">
-            <div
-                    v-for="attachment in input.attachments"
-                    class="attachments__item"
-                    v-if="attachment.type === 'doc'">
-                <a :href="`https://vk.com/wall${profile.id}_${postCopy.id}`" target="_blank">
-                    <div  class="img-container">
-                        <img
-                                :src="attachment.doc.url"
-                                alt="photo">
-                    </div>
-                </a>
-            </div>
-        </div>
         <div
-                v-if="input.attachments && attachsAreTypeOf(input.attachments, 'photo')"
-                class="attachments-photo">
+            v-if="input.attachments && attachsAreTypeOf(input.attachments, 'doc')"
+            class="attachments-photo"
+        >
             <div
-                    v-for="attachment in input.attachments"
-                    class="attachments__item"
-                    v-if="attachment.type === 'photo'">
+                v-for="attachment in input.attachments"
+                v-if="attachment.type === 'doc'"
+                class="attachments__item"
+            >
                 <a
-                        :href="`https://vk.com/photo${attachment.photo.owner_id}_${attachment.photo.id}`"
-                        target="_blank">
-                    <div  class="img-container">
+                    :href="`https://vk.com/wall${profile.id}_${postCopy.id}`"
+                    target="_blank"
+                >
+                    <div class="img-container">
                         <img
-                                :src="attachment.photo.photo_604 || attachment.photo.photo_130"
-                                alt="photo">
+                            :src="attachment.doc.url"
+                            alt="photo"
+                        >
                     </div>
                 </a>
             </div>
         </div>
         <div
-                v-if="input.attachments && attachsAreTypeOf(input.attachments, 'video')"
-                class="attachments-video">
+            v-if="input.attachments && attachsAreTypeOf(input.attachments, 'photo')"
+            class="attachments-photo"
+        >
             <div
-                    v-for="attachment in input.attachments"
-                    class="attachments__item"
-                    v-if="attachment.type === 'video'">
+                v-for="attachment in input.attachments"
+                v-if="attachment.type === 'photo'"
+                class="attachments__item"
+            >
+                <a
+                    :href="`https://vk.com/photo${attachment.photo.owner_id}_${attachment.photo.id}`"
+                    target="_blank"
+                >
+                    <div class="img-container">
+                        <img
+                            :src="attachment.photo.photo_604 || attachment.photo.photo_130"
+                            alt="photo"
+                        >
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div
+            v-if="input.attachments && attachsAreTypeOf(input.attachments, 'video')"
+            class="attachments-video"
+        >
+            <div
+                v-for="attachment in input.attachments"
+                v-if="attachment.type === 'video'"
+                class="attachments__item"
+            >
                 <div class="preview">
-                    <a :href="`https://vk.com/video${attachment.video.owner_id}_${attachment.video.id}`" target="_blank">
+                    <a
+                        :href="`https://vk.com/video${attachment.video.owner_id}_${attachment.video.id}`"
+                        target="_blank"
+                    >
                         <div class="img-case">
-                             <img
-                                     :src="attachment.video.photo_320 || attachment.video.photo_130"
-                                     alt="photo">
+                            <img
+                                :src="attachment.video.photo_320 || attachment.video.photo_130"
+                                alt="photo"
+                            >
                         </div>
                         <div class="video-overlay">
-                            <img src="@/assets/img/play.png" alt="play">
+                            <img
+                                src="@/assets/img/play.png"
+                                alt="play"
+                            >
                         </div>
                     </a>
                 </div>
-                <div class="name">{{ attachment.video.title }}</div>
+                <div class="name">
+                    {{ attachment.video.title }}
+                </div>
             </div>
         </div>
-        <div v-if="input.attachments && attachsAreTypeOf(input.attachments, 'audio')" class="attachments-audio">
+        <div
+            v-if="input.attachments && attachsAreTypeOf(input.attachments, 'audio')"
+            class="attachments-audio"
+        >
             <div
-                    v-for="attachment in input.attachments"
-                    class="attachments__item"
-                    v-if="attachment.type === 'audio'">
+                v-for="attachment in input.attachments"
+                v-if="attachment.type === 'audio'"
+                class="attachments__item"
+            >
                 <div class="audio-link">
-                    <a :href="`https://vk.com/wall${profile.id}_${postCopy.id}`" target="_blank">
+                    <a
+                        :href="`https://vk.com/wall${profile.id}_${postCopy.id}`"
+                        target="_blank"
+                    >
                         <div class="img-container">
-                            <img src="@/assets/img/play.png" alt="audio">
+                            <img
+                                src="@/assets/img/play.png"
+                                alt="audio"
+                            >
                         </div>
                     </a>
                     <div class="name">
@@ -71,56 +104,60 @@
                 </div>
             </div>
         </div>
-        <div class="attachments__text" v-if="input.text" v-html="parseText(input.text)"></div>
+        <div
+            v-if="input.text"
+            class="attachments__text"
+            v-html="parseText(input.text)"
+        />
     </div>
 </template>
 
 <script>
-    export default {
-        name: "Attachments",
-        props: {
-            input: {
-                type: Object
-            },
-            profileCopy: {
-                type: Object
-            },
-            postCopy: {
-                type: Object
-            },
-            profile: {
-                type: Object
-            }
+export default {
+    name: 'Attachments',
+    props: {
+        input: {
+            type: Object,
         },
-        methods: {
-            parseText(text) {
-                if (!text) return;
+        profileCopy: {
+            type: Object,
+        },
+        postCopy: {
+            type: Object,
+        },
+        profile: {
+            type: Object,
+        },
+    },
+    methods: {
+        parseText(text) {
+            if (!text) return;
 
-                let newText = text;
-                let parts = text.match(/(\[(.*?)\|(.*?)])/);
-                if (parts === null || parts.length < 3) return text;
-                parts.shift();
-                if (parts.length === 3) {
-                    let replacePart = parts.shift();
+            let newText = text;
+            const parts = text.match(/(\[(.*?)\|(.*?)])/);
+            if (parts === null || parts.length < 3) return text;
+            parts.shift();
+            if (parts.length === 3) {
+                const replacePart = parts.shift();
 
-                    newText = newText.replace(replacePart, () => {
-                        const link = parts.shift();
-                        const linkName = parts.shift();
+                newText = newText.replace(replacePart, () => {
+                    const link = parts.shift();
+                    const linkName = parts.shift();
 
-                        return `<a href="https://vk.com/${link}" target="_blank">${linkName}</a>`
-                    });
-                }
-
-                return this.parseText.call(this, newText);
-            },
-            attachsAreTypeOf(attachs, type) {
-                for (let attach of attachs) {
-                    if (attach.type === type) return true;
-                }
-                return false;
+                    return `<a href="https://vk.com/${link}" target="_blank">${linkName}</a>`;
+                });
             }
-        }
-    }
+
+            return this.parseText.call(this, newText);
+        },
+        attachsAreTypeOf(attachs, type) {
+            for (const attach of attachs) {
+                if (attach.type === type) return true;
+            }
+            return false;
+        },
+    },
+};
 </script>
 
 <style lang="scss">

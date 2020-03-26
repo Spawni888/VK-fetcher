@@ -12,7 +12,7 @@ const app = new Koa();
 const router = require('./routes/routes');
 
 app
-    // .use(logger())
+// .use(logger())
     .use(serve(path.join(__dirname, '..', 'dist')))
     .use(bodyParser());
 
