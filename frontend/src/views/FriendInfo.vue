@@ -130,7 +130,7 @@ export default {
     data: () => ({
         profile: null,
         wall: null,
-        wallPosts: 1,
+        wallPosts: 6,
         selectedFriends: [],
         isPageBottom: false,
     }),
@@ -142,7 +142,7 @@ export default {
     },
     created() {
         this.getPageInfo();
-        this.wallPosts = 1;
+        this.wallPosts = 6;
     },
     destroyed() {
         window.removeEventListener('scroll', this.onScroll);
@@ -194,7 +194,7 @@ export default {
                 .catch(() => {
                     this.showMorePosts.call(this);
                 });
-            this.wallPosts++;
+            this.wallPosts += 5;
         },
     },
 };
@@ -299,6 +299,11 @@ export default {
         position: fixed;
         left: 0;
         bottom: 0;
+        margin: 20px 40px;
+
+        @media (max-width: $tableWidth) {
+            margin: 10px 20px;
+        }
     }
     .lds-ring {
         display: inline-block;

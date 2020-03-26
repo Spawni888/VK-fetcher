@@ -9,9 +9,13 @@
 }
 
 .neon-button {
+    margin: 20px 40px;
     position: fixed;
     right: 0;
     bottom: 0;
+    @media (max-width: $tableWidth) {
+        margin: 10px 20px;
+    }
 }
 
 .slide-right-enter-active {

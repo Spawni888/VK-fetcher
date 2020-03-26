@@ -30,8 +30,9 @@
                 v-if="selectedValuesArray.length || $route.name !== 'Home'"
                 :key="pageInfo.buttonText"
                 class="neon-button"
+                @click="routeTo(pageInfo.route)"
             >
-                <neon-button :route="pageInfo.route">
+                <neon-button>
                     {{ pageInfo.buttonText }}
                 </neon-button>
             </div>
@@ -83,7 +84,11 @@ export default {
             }
         },
     },
-
+    methods: {
+        routeTo(route) {
+            this.$router.push(route);
+        },
+    },
 };
 </script>
 

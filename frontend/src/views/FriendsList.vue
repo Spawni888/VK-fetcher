@@ -196,6 +196,11 @@ export default {
         left: 0;
         bottom: 0;
         justify-content: center;
+        margin: 20px 40px;
+
+        @media (max-width: $tableWidth) {
+            margin: 10px 20px;
+        }
     }
 
     .lds-ring {

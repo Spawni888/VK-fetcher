@@ -33,7 +33,7 @@ const wallQueryParams = {
     access_token: process.env.VK_ACCESS_TOKEN,
     owner_id: null,
     offset: 0,
-    count: 1,
+    count: 5,
     fields: [
         'id',
     ],

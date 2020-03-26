@@ -1,36 +1,28 @@
 <template>
-    <router-link
-        tag="a"
-        :to="route ? route : $route"
-    >
+    <div class="galaxy-button">
         <span />
         <span />
         <span />
         <span />
         <slot />
-    </router-link>
+    </div>
 </template>
 
 <script>
 export default {
     name: 'NeonButton',
-    props: {
-        route: {
-            type: Object,
-        },
-    },
 };
 </script>
 
 <style scoped lang="scss">
     @import "@/assets/scss/main";
 
-    a{
+    .galaxy-button{
+        cursor: pointer;
         color: #03E9F4;
         display: inline-block;
         font-size: 16px;
         letter-spacing: 4px;
-        margin: 20px 40px;
         padding: 24px 30px;
         position: relative;
         overflow: hidden;
@@ -45,30 +37,29 @@ export default {
         @media (max-width: $tableWidth) {
             font-size: 8px;
             padding: 16px 12px;
-            margin: 10px 20px;
         }
     }
 
-    a{
+    .galaxy-button{
         filter: hue-rotate(45deg);
         opacity: 0.9;
     }
 
-    a:hover{
+    .galaxy-button:hover{
         background: #03E9F4;
         box-shadow: 0 0 5px #03E9F4, 0 0 25px #03E9F4, 0 0 50px #03E9F4, 0 0 200px #03E9F4;
         color: #050801;
     }
-    a:focus {
+    .galaxy-button:focus {
         box-shadow: 0 0 5px #03E9F4, 0 0 15px #03E9F4, 0 0 25px #03E9F4, 0 0 75px #03E9F4;
     }
 
-    a span{
+    .galaxy-button span{
         display: block;
         position: absolute;
     }
 
-    a span:nth-child(1){
+    .galaxy-button span:nth-child(1){
         animation: animate1 1.5s linear infinite;
         background: linear-gradient(90deg, transparent, #03E9F4);
         height: 2px;
@@ -86,7 +77,7 @@ export default {
         }
     }
 
-    a span:nth-child(2){
+    .galaxy-button span:nth-child(2){
         animation: animate2 1.5s linear infinite;
         animation-delay: 0.375s;
         background: linear-gradient(180deg, transparent, #03E9F4);
@@ -105,7 +96,7 @@ export default {
         }
     }
 
-    a span:nth-child(3){
+    .galaxy-button span:nth-child(3){
         animation: animate3 1.5s linear infinite;
         animation-delay: 0.75s;
         background: linear-gradient(270deg, transparent, #03E9F4);
@@ -124,7 +115,7 @@ export default {
         }
     }
 
-    a span:nth-child(4){
+    .galaxy-button span:nth-child(4){
         animation: animate4 1.5s linear infinite;
         animation-delay: 1.125s;
         background: linear-gradient(360deg, transparent, #03E9F4);
