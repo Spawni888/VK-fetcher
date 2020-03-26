@@ -1,11 +1,11 @@
 <template>
-    <div class="wall-post">
-        <div class="profile-info">
-            <div class="profile-info__picture">
-                <transition
-                    name="fade-in"
-                    mode="out-in"
-                >
+    <transition
+        name="fade-in"
+        mode="out-in"
+    >
+        <div class="wall-post">
+            <div class="profile-info">
+                <div class="profile-info__picture">
                     <a
                         :key="profileCopy.photo_400_orig || profileCopy.photo_200_orig || profileCopy.photo_200"
                         :href="`https://vk.com/id${profileCopy.id}`"
@@ -16,86 +16,86 @@
                             alt="profile"
                         >
                     </a>
-                </transition>
-            </div>
-            <div class="profile-info__other">
-                <div class="profile-info__name">
-                    {{ profileCopy.first_name }} {{ profileCopy.last_name }}
                 </div>
-                <div class="profile-info__date">
-                    <a
-                        :href="`https://vk.com/wall${profile.id}_${postCopy.id}`"
-                        target="_blank"
-                    >
-                        {{ defineDate(postCopy.date) }}
-                    </a>
-                </div>
-            </div>
-            <attachments
-                :profile="profile"
-                :post-copy="postCopy"
-                :profile-copy="profileCopy"
-                :input="postCopy"
-            />
-        </div>
-
-        <div
-            v-if="postCopy.copy_history"
-            class="reposts"
-        >
-            <transition-group
-                mode="out-in"
-                name="fade-in"
-            >
-                <div
-                    v-for="(repost, i) in postCopy.copy_history"
-                    v-if="repost.photo"
-                    :key="repost.photo"
-                    class="repost"
-                    :style="{paddingLeft: i * 50 + 50 + 'px'}"
-                >
-                    <div class="repost-info">
-                        <div class="repost-icon">
-                            <img
-                                src="@/assets/img/repost.png"
-                                alt="repost"
-                            >
-                        </div>
-                        <div class="repost-info__picture">
-                            <a
-                                :href="createImgLink(repost)"
-                                target="_blank"
-                            >
-                                <img
-                                    :src="repost.photo"
-                                    alt="img"
-                                >
-                            </a>
-                        </div>
-                        <div class="repost-info__other">
-                            <div class="repost-info__name">
-                                {{ repost.name }}
-                            </div>
-                            <div class="repost-info__date">
-                                <a
-                                    :href="`https://vk.com/wall${repost.from_id}_${repost.id}`"
-                                    target="_blank"
-                                >
-                                    {{ defineDate(repost.date) }}
-                                </a>
-                            </div>
-                        </div>
-                        <attachments
-                            :profile="profile"
-                            :post-copy="postCopy"
-                            :profile-copy="profileCopy"
-                            :input="repost"
-                        />
+                <div class="profile-info__other">
+                    <div class="profile-info__name">
+                        {{ profileCopy.first_name }} {{ profileCopy.last_name }}
+                    </div>
+                    <div class="profile-info__date">
+                        <a
+                            :href="`https://vk.com/wall${profile.id}_${postCopy.id}`"
+                            target="_blank"
+                        >
+                            {{ defineDate(postCopy.date) }}
+                        </a>
                     </div>
                 </div>
-            </transition-group>
+                <attachments
+                    :profile="profile"
+                    :post-copy="postCopy"
+                    :profile-copy="profileCopy"
+                    :input="postCopy"
+                />
+            </div>
+
+            <div
+                v-if="postCopy.copy_history"
+                class="reposts"
+            >
+                <transition-group
+                    mode="out-in"
+                    name="fade-in"
+                >
+                    <div
+                        v-for="(repost, i) in postCopy.copy_history"
+                        v-if="repost.photo"
+                        :key="repost.photo"
+                        class="repost"
+                        :style="{paddingLeft: i * 50 + 50 + 'px'}"
+                    >
+                        <div class="repost-info">
+                            <div class="repost-icon">
+                                <img
+                                    src="@/assets/img/repost.png"
+                                    alt="repost"
+                                >
+                            </div>
+                            <div class="repost-info__picture">
+                                <a
+                                    :href="createImgLink(repost)"
+                                    target="_blank"
+                                >
+                                    <img
+                                        :src="repost.photo"
+                                        alt="img"
+                                    >
+                                </a>
+                            </div>
+                            <div class="repost-info__other">
+                                <div class="repost-info__name">
+                                    {{ repost.name }}
+                                </div>
+                                <div class="repost-info__date">
+                                    <a
+                                        :href="`https://vk.com/wall${repost.from_id}_${repost.id}`"
+                                        target="_blank"
+                                    >
+                                        {{ defineDate(repost.date) }}
+                                    </a>
+                                </div>
+                            </div>
+                            <attachments
+                                :profile="profile"
+                                :post-copy="postCopy"
+                                :profile-copy="profileCopy"
+                                :input="repost"
+                            />
+                        </div>
+                    </div>
+                </transition-group>
+            </div>
         </div>
-    </div>
+    </transition>
 </template>
 
 <script>
