@@ -25,14 +25,17 @@
                 name="fade-in"
                 mode="out-in"
             >
-                <div
-                    :key="profileCopy.first_name + profileCopy.last_name"
-                    class="profile-info__other"
-                >
-                    <div class="profile-info__name">
+                <div class="profile-info__other">
+                    <div
+                        :key="profileCopy.first_name + profileCopy.last_name"
+                        class="profile-info__name"
+                    >
                         {{ profileCopy.first_name }} {{ profileCopy.last_name }}
                     </div>
-                    <div class="profile-info__date">
+                    <div
+                        :key="`https://vk.com/wall${profile.id}_${postCopy.id}`"
+                        class="profile-info__date"
+                    >
                         <a
                             :href="`https://vk.com/wall${profile.id}_${postCopy.id}`"
                             target="_blank"
