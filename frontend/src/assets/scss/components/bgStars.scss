@@ -1,13 +1,12 @@
 html {
     background-color: #151e2b;
-
 }
 
 @function multiple-box-shadow ($n) {
-    $value: '#{random(10000)}px #{random(10000)}px #FFF';
+    $value: '#{random(2500)}px #{random(10000)}px #FFF';
 
     @for $i from 2 through $n {
-        $value: '#{$value} , #{random(10000)}px #{random(10000)}px #FFF'
+        $value: '#{$value} , #{random(2500)}px #{random(10000)}px #FFF'
     }
     @return unquote($value);
 }
