@@ -2,15 +2,21 @@
     <div class="wall-post">
         <div class="profile-info">
             <div class="profile-info__picture">
-                <a
-                    :href="`https://vk.com/id${profileCopy.id}`"
-                    target="_blank"
+                <transition
+                    name="fade-in"
+                    mode="out-in"
                 >
-                    <img
-                        :src="profileCopy.photo_400_orig || profileCopy.photo_200_orig || profileCopy.photo_200"
-                        alt="profile"
+                    <a
+                        :key="profileCopy.photo_400_orig || profileCopy.photo_200_orig || profileCopy.photo_200"
+                        :href="`https://vk.com/id${profileCopy.id}`"
+                        target="_blank"
                     >
-                </a>
+                        <img
+                            :src="profileCopy.photo_400_orig || profileCopy.photo_200_orig || profileCopy.photo_200"
+                            alt="profile"
+                        >
+                    </a>
+                </transition>
             </div>
             <div class="profile-info__other">
                 <div class="profile-info__name">
