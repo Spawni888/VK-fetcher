@@ -62,6 +62,5 @@ router.beforeEach((to, from, next) => {
         top: 0,
         behavior: 'smooth',
     });
-    next(false);
 });
 export default router;

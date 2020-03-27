@@ -10,7 +10,7 @@
                     v-for="friend in paginatedFriends()"
                     :key="friend.id"
                     class="friend"
-                    :style="{border: `5px solid hsl(210, 23%, ${computeBrightness(friend)}%)`}"
+                    :style="{borderColor: `hsla(${ computeHue(friend) }, 72%, 70%, 70%)`}"
                     @click="openInfo(friend)"
                 >
                     <div class="friend__picture">
@@ -87,6 +87,7 @@ export default {
             'profilesFriends',
             'getMutualFriends',
             'selectedValuesArray',
+            'maxMutualFriendsNumber',
         ]),
     },
     mounted() {
@@ -127,14 +128,13 @@ export default {
 
             this.isPageBottom = bottomOfWindow;
         },
-        computeBrightness({ id }) {
-            const mutualFriendsCount = this.getMutualFriends(id).length;
-            const panelLight = mutualFriendsCount * 15 + 20;
+        computeHue({ id }) {
+            const maxMutualFriend = this.maxMutualFriendsNumber;
+            if (Number(maxMutualFriend) === 1) return 118;
 
-            if (panelLight > 100) {
-                return 100;
-            }
-            return panelLight;
+            const mutualFriendsCount = this.getMutualFriends(id).length;
+
+            return (mutualFriendsCount - 1) / (maxMutualFriend - 1) * (360 - 118) + 118;
         },
         openInfo({ id }) {
             this.$router.push({ name: 'FriendInfo', params: { id } });
@@ -162,6 +162,7 @@ export default {
         }
 
         .friend {
+            border: 5px solid;
             color: #FFFFFF;
             margin: 0 5px 20px 5px;
             padding: 10px;

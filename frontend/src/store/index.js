@@ -9,6 +9,7 @@ export default new Vuex.Store({
         selectedProfiles: {},
         friendsMap: {},
         _friends: [],
+        maxMutualFriendsCount: 1,
     },
     getters: {
         selectedProfilesObj(state) {
@@ -22,6 +23,7 @@ export default new Vuex.Store({
             return [...state._friends];
         },
         getMutualFriends: (state) => (id) => state.friendsMap[id],
+        maxMutualFriendsNumber: (state) => state.maxMutualFriendsCount,
     },
     mutations: {
         select(state, profile) {
@@ -43,6 +45,7 @@ export default new Vuex.Store({
                 } else {
                     state.friendsMap[friend.id].push(profile);
                 }
+                state.maxMutualFriendsCount = Math.max(state.maxMutualFriendsCount, state.friendsMap[friend.id].length);
             });
         },
         clearFriendsMap(state, profile) {
