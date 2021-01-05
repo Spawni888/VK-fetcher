@@ -9,7 +9,7 @@
         "lint": "./node_modules/.bin/eslint.cmd ./ --fix --ext .js,.vue"
     },
     "dependencies": {
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "core-js": "^3.6.4",
         "dotenv": "^8.2.0",
         "koa": "^2.11.0",
